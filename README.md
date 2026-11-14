@@ -33,24 +33,6 @@ El entorno web incluye:
 * **Conversor interactivo** de números decimales a 6/7 y de texto a bytes de 6 y 7.
 
 ---
-
-## 📖 Documentación Oficial en Read the Docs
-
-La documentación completa de **Sopito++**, incluyendo la especificación matemática, manual de opcodes, guías de instalación y tutoriales, se encuentra disponible y lista para alojarse en **Read the Docs**:
-
-* 📘 [Especificación Formal (SPECIFICATION.md)](SPECIFICATION.md)
-* 🌐 Documentación Sphinx lista en la carpeta [`docs/`](docs/)
-* ⚙️ Archivo de despliegue automático [`.readthedocs.yaml`](.readthedocs.yaml)
-
-Para compilar la documentación localmente:
-```bash
-pip install -r docs/requirements.txt
-python -m sphinx -b html docs docs/_build/html
-# Abrir docs/_build/html/index.html en tu navegador
-```
-
----
-
 ## 🌟 ¿Qué es Sopito++?
 
 **Sopito++** es un lenguaje esotérico y formalmente especificado basado en una reinterpretación del sistema binario:
@@ -215,21 +197,6 @@ python tests/test_sopito.py
 ```
 
 ---
-
-## 📦 Cómo Subir a GitHub y Desplegar en Read the Docs
-
-### 1. Subir a GitHub
-```bash
-# Inicializar y crear commit
-git init
-git add .
-git commit -m "feat: lanzamiento inicial de sopito++ v1.0.0"
-
-# Conectar tu repositorio remoto de GitHub
-git branch -M main
-git remote add origin https://github.com/tu-usuario/sopito.git
-git push -u origin main
-```
 
 ### 2. Conectar con Read the Docs
 1. Ve a [readthedocs.org](https://readthedocs.org/) e inicia sesión con tu cuenta de GitHub.
