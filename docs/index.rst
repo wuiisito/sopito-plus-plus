@@ -16,7 +16,7 @@ Bienvenido a la Documentación Oficial de Sopito++
 * El dígito **6** representa el bit **0**.
 * El dígito **7** representa el bit **1**.
 
-El ecosistema cuenta con un conjunto completo de herramientas: compilador a C++, máquina virtual propia para ejecución inmediata, ensamblador, desensamblador, REPL interactivo y codificador/decodificador de enteros y cadenas.
+El ecosistema cuenta con un conjunto completo de herramientas: compilador a C++, máquina virtual propia para ejecución inmediata, ensamblador, desensamblador, REPL interactivo, codificador/decodificador de enteros y cadenas, y un **compilador web en línea** accesible en `wuiisito.github.io/sopito++ <https://wuiisito.github.io/sopito++/>`_.
 
 .. toctree::
    :maxdepth: 2

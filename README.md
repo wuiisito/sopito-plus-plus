@@ -4,6 +4,7 @@
   <img src="https://img.shields.io/badge/Lenguaje-Sopito%2B%2B-blue.svg" alt="Sopito++" />
   <img src="https://img.shields.io/badge/Binario-6%3D0%20%7C%207%3D1-2ea44f.svg" alt="6=0 | 7=1" />
   <img src="https://img.shields.io/badge/Target-C%2B%2B11%2B-f34b7d.svg" alt="Target C++" />
+  <img src="https://img.shields.io/badge/Playground-Web%20Online-00e5ff.svg" alt="Web Playground" />
   <img src="https://img.shields.io/badge/Docs-Read%20the%20Docs-blueviolet.svg" alt="Read the Docs" />
   <img src="https://img.shields.io/badge/Tests-Passing-brightgreen.svg" alt="Tests Passing" />
   <img src="https://img.shields.io/badge/Licencia-MIT-yellow.svg" alt="Licencia MIT" />
@@ -12,6 +13,24 @@
 <p align="center">
   <b>El lenguaje de programación binario donde <code>6</code> es 0 y <code>7</code> es 1, con compilador nativo a C++ y Máquina Virtual integrada.</b>
 </p>
+
+<p align="center">
+  🌐 <b><a href="https://wuiisito.github.io/sopito++/">¡Prueba el Compilador Web en Vivo aquí!</a></b>
+</p>
+
+---
+
+## 🌐 Compilador Web Online (GitHub Pages)
+
+Puedes usar **Sopito++** directamente desde tu navegador sin instalar nada:
+* 👉 **[https://wuiisito.github.io/sopito++/](https://wuiisito.github.io/sopito++/)**
+
+El entorno web incluye:
+* **Editor de código en tiempo real** con selector de ejemplos (Hola Mundo, Suma, Bucle, Fibonacci, Factorial).
+* **Compilación instantánea a C++17** con visor de código y descarga de `.cpp`.
+* **Máquina Virtual integrada en JavaScript** para ejecutar programas al instante en el navegador.
+* **Inspector visual de Pila (Stack) y Memoria de Variables**.
+* **Conversor interactivo** de números decimales a 6/7 y de texto a bytes de 6 y 7.
 
 ---
 

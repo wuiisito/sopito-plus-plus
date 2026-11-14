@@ -1,0 +1,1514 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sopito++ | Compilador Web y Entorno de Desarrollo</title>
+  <meta name="description" content="Compilador web oficial de Sopito++, el lenguaje binario donde 6 es 0 y 7 es 1. Compila a C++ y ejecuta en vivo en el navegador.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥣</text></svg>">
+  <style>
+    :root {
+      --bg-dark: #0a0d14;
+      --bg-panel: #111622;
+      --bg-card: #182030;
+      --border: #243048;
+      --border-focus: #00e5ff;
+      --accent: #00e5ff;
+      --accent-glow: rgba(0, 229, 255, 0.25);
+      --green: #00ff88;
+      --green-glow: rgba(0, 255, 136, 0.2);
+      --yellow: #ffb703;
+      --red: #ff3366;
+      --text: #e2e8f0;
+      --text-muted: #8899b0;
+      --font-mono: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', Consolas, monospace;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg-dark);
+      color: var(--text);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Header */
+    header {
+      background: rgba(17, 22, 34, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .logo-icon {
+      font-size: 1.75rem;
+      background: linear-gradient(135deg, var(--accent), var(--green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 10px var(--accent-glow));
+    }
+
+    .logo-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-badge {
+      background: rgba(0, 229, 255, 0.12);
+      color: var(--accent);
+      border: 1px solid rgba(0, 229, 255, 0.3);
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      font-family: var(--font-mono);
+    }
+
+    .header-links {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .header-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .header-link:hover {
+      color: var(--accent);
+    }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 1rem 1.5rem;
+      gap: 1rem;
+      max-width: 1700px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* Toolbar */
+    .toolbar {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .toolbar-group {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    select, button, input {
+      font-family: inherit;
+      font-size: 0.85rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text);
+      padding: 0.5rem 0.85rem;
+      outline: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    select:focus, input:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 2px var(--accent-glow);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #00d2ff 0%, #00f076 100%);
+      color: #061019;
+      border: none;
+      box-shadow: 0 2px 10px rgba(0, 229, 255, 0.3);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 4px 16px rgba(0, 229, 255, 0.45);
+    }
+
+    .btn-secondary {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .btn-danger {
+      background: rgba(255, 51, 102, 0.15);
+      border: 1px solid rgba(255, 51, 102, 0.3);
+      color: var(--red);
+    }
+
+    .btn-danger:hover {
+      background: rgba(255, 51, 102, 0.25);
+    }
+
+    /* Workspace Grid */
+    .workspace {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      flex: 1;
+      min-height: 580px;
+    }
+
+    @media (max-width: 1024px) {
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Card Panels */
+    .panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .panel-header {
+      background: rgba(24, 32, 48, 0.6);
+      border-bottom: 1px solid var(--border);
+      padding: 0.6rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .panel-tabs {
+      display: flex;
+      gap: 0.4rem;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-weight: 600;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
+    }
+
+    .tab-btn:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .tab-btn.active {
+      color: var(--accent);
+      background: rgba(0, 229, 255, 0.12);
+      border: 1px solid rgba(0, 229, 255, 0.25);
+    }
+
+    .panel-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .icon-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      padding: 0.35rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+    }
+
+    .icon-btn:hover {
+      border-color: var(--border);
+      color: var(--text);
+      background: var(--bg-card);
+    }
+
+    /* Code Editor Container */
+    .editor-wrapper {
+      position: relative;
+      flex: 1;
+      display: flex;
+      min-height: 380px;
+      background: #0d111a;
+    }
+
+    textarea.code-editor {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      color: #f1f5f9;
+      font-family: var(--font-mono);
+      font-size: 0.92rem;
+      line-height: 1.55;
+      padding: 1rem;
+      border: none;
+      resize: none;
+      outline: none;
+      tab-size: 4;
+      white-space: pre;
+      overflow-wrap: normal;
+      overflow-x: auto;
+    }
+
+    /* Output Panels */
+    .output-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      background: #0d111a;
+      overflow: hidden;
+    }
+
+    .code-display {
+      flex: 1;
+      margin: 0;
+      padding: 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      line-height: 1.5;
+      color: #a5f3fc;
+      overflow: auto;
+      white-space: pre;
+      background: transparent;
+    }
+
+    /* Terminal Console */
+    .terminal-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #090c12;
+      font-family: var(--font-mono);
+      padding: 1rem;
+      overflow-y: auto;
+    }
+
+    .terminal-output {
+      color: var(--green);
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+      font-size: 0.9rem;
+    }
+
+    .terminal-output .info {
+      color: var(--accent);
+    }
+
+    .terminal-output .error {
+      color: var(--red);
+      font-weight: bold;
+    }
+
+    .terminal-prompt {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+      padding-top: 0.5rem;
+      border-top: 1px dashed rgba(255, 255, 255, 0.1);
+    }
+
+    .prompt-label {
+      color: var(--yellow);
+      font-weight: bold;
+      font-size: 0.85rem;
+    }
+
+    .prompt-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-family: var(--font-mono);
+      outline: none;
+      padding: 0.2rem 0.4rem;
+    }
+
+    /* Stack & Memory Inspector */
+    .inspector-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      background: var(--bg-panel);
+      border-top: 1px solid var(--border);
+      max-height: 220px;
+      overflow-y: auto;
+    }
+
+    .inspector-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.6rem 0.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .inspector-header {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .stack-items {
+      display: flex;
+      flex-wrap: wrap-reverse;
+      gap: 0.4rem;
+      min-height: 38px;
+      align-items: center;
+    }
+
+    .stack-chip {
+      background: rgba(0, 229, 255, 0.15);
+      border: 1px solid rgba(0, 229, 255, 0.4);
+      color: var(--accent);
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 600;
+      animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.6); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .memory-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+    }
+
+    .memory-table th, .memory-table td {
+      padding: 0.25rem 0.5rem;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .memory-table th {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* Modal / Tool section */
+    .converter-bar {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+
+    @media (max-width: 768px) {
+      .converter-bar {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .converter-col {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .converter-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .converter-inputs {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .converter-inputs input {
+      flex: 1;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1rem 1.5rem;
+      text-align: center;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      background: var(--bg-dark);
+    }
+
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Status indicator */
+    .status-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+    }
+
+    .badge-67 {
+      background: #1b263b;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      color: var(--yellow);
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <a href="#" class="logo-container">
+      <span class="logo-icon">🥣</span>
+      <span class="logo-title">Sopito++</span>
+      <span class="logo-badge">6=0 | 7=1</span>
+    </a>
+    <div class="header-links">
+      <span class="badge-67">v1.0.0 Web</span>
+      <a href="https://github.com/wuiisito/sopito" target="_blank" class="header-link">
+        <svg height="18" width="18" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+      <a href="https://readthedocs.org" target="_blank" class="header-link">📖 Documentación</a>
+    </div>
+  </header>
+
+  <!-- Main App -->
+  <main>
+    <!-- Toolbar Controls -->
+    <div class="toolbar">
+      <div class="toolbar-group">
+        <label for="exampleSelect">📂 Ejemplo:</label>
+        <select id="exampleSelect">
+          <option value="01">🌟 01: Hola Mundo (Texto)</option>
+          <option value="02" selected>➕ 02: Suma de 6 + 7 = 13</option>
+          <option value="03">🔄 03: Bucle Contador (1 al 5)</option>
+          <option value="04">🌀 04: Serie de Fibonacci</option>
+          <option value="05">⚡ 05: Factorial con Subrutinas (CALL/RET)</option>
+        </select>
+
+        <label for="syntaxMode">Sintaxis:</label>
+        <select id="syntaxMode">
+          <option value="spp" selected>Binario Puro (.spp en 6/7)</option>
+          <option value="sasm">Mnemónicos (.sasm)</option>
+        </select>
+      </div>
+
+      <div class="toolbar-group">
+        <button id="btnAssemble" class="btn btn-secondary" title="Convertir entre .sasm y .spp">⇄ Ensamblar / Desensamblar</button>
+        <button id="btnCompile" class="btn btn-secondary" title="Generar código C++ nativo">⚙️ Compilar a C++</button>
+        <button id="btnRun" class="btn btn-primary" title="Ejecutar en la Máquina Virtual">▶ Ejecutar en VM</button>
+        <button id="btnClearTerm" class="btn btn-danger" title="Limpiar salida de consola">🗑 Limpiar</button>
+      </div>
+    </div>
+
+    <!-- Workspace split -->
+    <div class="workspace">
+      <!-- Left Panel: Code Editor -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-tabs">
+            <button class="tab-btn active" id="tabSource">Editor de Código</button>
+          </div>
+          <div class="panel-actions">
+            <span id="charCount" style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono);">0 caracteres</span>
+            <button id="btnDownloadSrc" class="icon-btn" title="Descargar código fuente">💾 Guardar</button>
+          </div>
+        </div>
+        <div class="editor-wrapper">
+          <textarea id="editor" class="code-editor" spellcheck="false" placeholder="Escribe aquí tu código en 6s y 7s o ensamblador..."></textarea>
+        </div>
+      </div>
+
+      <!-- Right Panel: Output, C++ and VM Visualizer -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-tabs">
+            <button class="tab-btn active" id="tabTerminal">Consola / VM</button>
+            <button class="tab-btn" id="tabCpp">Código C++ Generado</button>
+          </div>
+          <div class="panel-actions">
+            <button id="btnCopyOutput" class="icon-btn" title="Copiar contenido">📋 Copiar</button>
+            <button id="btnDownloadCpp" class="icon-btn" title="Descargar archivo C++" style="display: none;">📥 Descargar .cpp</button>
+          </div>
+        </div>
+
+        <div class="output-container">
+          <!-- Terminal View -->
+          <div id="viewTerminal" class="terminal-container">
+            <div id="terminalOutput" class="terminal-output">
+              <span class="info">🥣 Máquina Virtual de Sopito++ lista.<br>Selecciona un ejemplo o escribe tu código y pulsa "▶ Ejecutar en VM".</span>
+            </div>
+          </div>
+
+          <!-- C++ View -->
+          <div id="viewCpp" style="display: none; height: 100%; overflow: auto;">
+            <pre id="cppOutput" class="code-display">// Pulsa "⚙️ Compilar a C++" para ver la traducción en C++17...</pre>
+          </div>
+
+          <!-- Stack & Memory Inspector -->
+          <div class="inspector-grid" id="inspectorGrid">
+            <div class="inspector-box">
+              <div class="inspector-header">
+                <span>Pila LIFO (<span id="stackSize">0</span>)</span>
+                <span style="color: var(--accent);">Top</span>
+              </div>
+              <div class="stack-items" id="stackView">
+                <span style="color: var(--text-muted); font-size: 0.8rem; font-style: italic;">Pila vacía</span>
+              </div>
+            </div>
+
+            <div class="inspector-box">
+              <div class="inspector-header">
+                <span>Memoria de Variables</span>
+                <span>ID -> Valor</span>
+              </div>
+              <div style="overflow-y: auto; max-height: 100px;">
+                <table class="memory-table">
+                  <thead>
+                    <tr><th>ID</th><th>Valor</th></tr>
+                  </thead>
+                  <tbody id="memoryView">
+                    <tr><td colspan="2" style="color: var(--text-muted); font-style: italic;">Sin variables</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Converter Bar -->
+    <div class="converter-bar">
+      <!-- Decimal to Sopito -->
+      <div class="converter-col">
+        <div class="converter-title">
+          <span>🔢 Conversor Numérico (6 es 0, 7 es 1)</span>
+        </div>
+        <div class="converter-inputs">
+          <input type="number" id="inputDecimal" placeholder="Decimal (ej: 42)" value="42">
+          <span style="display: flex; align-items: center; color: var(--text-muted);">➜</span>
+          <input type="text" id="outputSopitoNum" readonly placeholder="Sopito++ (767676)">
+        </div>
+      </div>
+
+      <!-- Text to Sopito Bytes -->
+      <div class="converter-col">
+        <div class="converter-title">
+          <span>🔤 Conversor de Texto a Bytes 6/7</span>
+        </div>
+        <div class="converter-inputs">
+          <input type="text" id="inputText" placeholder="Texto (ej: Hola)" value="Hola">
+          <span style="display: flex; align-items: center; color: var(--text-muted);">➜</span>
+          <input type="text" id="outputSopitoBytes" readonly placeholder="Bytes en 6/7">
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div>
+      <span class="status-dot"></span> <b>Sopito++ Web Compiler</b> &bull; Creado con amor por la comunidad.
+    </div>
+    <div>
+      Alojado en <a href="https://wuiisito.github.io/sopito++/" target="_blank">wuiisito.github.io/sopito++</a> &bull;
+      Regla Sagrada: <code>6 = 0</code> y <code>7 = 1</code>
+    </div>
+  </footer>
+
+  <!-- Sopito++ Runtime Engine -->
+  <script>
+    // --- Tabla Oficial de Opcodes (ISA) ---
+    const OPCODE_TABLE = {
+      0:  { mnemonic: "HALT",       sopito: "66666", args: 0, desc: "Termina la ejecución" },
+      1:  { mnemonic: "PUSH",       sopito: "66667", args: 1, desc: "Empuja un entero a la pila" },
+      2:  { mnemonic: "POP",        sopito: "66676", args: 0, desc: "Descarta el tope de la pila" },
+      3:  { mnemonic: "DUP",        sopito: "66677", args: 0, desc: "Duplica el valor en el tope" },
+      4:  { mnemonic: "SWAP",       sopito: "66766", args: 0, desc: "Intercambia los dos elementos del tope" },
+      5:  { mnemonic: "OVER",       sopito: "66767", args: 0, desc: "Copia el penúltimo elemento al tope" },
+      6:  { mnemonic: "ADD",        sopito: "66776", args: 0, desc: "Suma (b + a)" },
+      7:  { mnemonic: "SUB",        sopito: "66777", args: 0, desc: "Resta (b - a)" },
+      8:  { mnemonic: "MUL",        sopito: "67666", args: 0, desc: "Multiplica (b * a)" },
+      9:  { mnemonic: "DIV",        sopito: "67667", args: 0, desc: "División entera (b / a)" },
+      10: { mnemonic: "MOD",        sopito: "67676", args: 0, desc: "Módulo (b % a)" },
+      11: { mnemonic: "NEG",        sopito: "67677", args: 0, desc: "Invierte el signo (-a)" },
+      12: { mnemonic: "EQ",         sopito: "67766", args: 0, desc: "Igualdad: 1 si b == a, sino 0" },
+      13: { mnemonic: "LT",         sopito: "67767", args: 0, desc: "Menor que: 1 si b < a, sino 0" },
+      14: { mnemonic: "GT",         sopito: "67776", args: 0, desc: "Mayor que: 1 si b > a, sino 0" },
+      15: { mnemonic: "NOT",        sopito: "67777", args: 0, desc: "Negación lógica" },
+      16: { mnemonic: "AND",        sopito: "76666", args: 0, desc: "AND a nivel de bits" },
+      17: { mnemonic: "OR",         sopito: "76667", args: 0, desc: "OR a nivel de bits" },
+      18: { mnemonic: "LABEL",      sopito: "76676", args: 1, desc: "Define etiqueta de salto" },
+      19: { mnemonic: "JMP",        sopito: "76677", args: 1, desc: "Salto incondicional" },
+      20: { mnemonic: "JZ",         sopito: "76766", args: 1, desc: "Salto si el tope es cero (pop)" },
+      21: { mnemonic: "JNZ",        sopito: "76767", args: 1, desc: "Salto si el tope no es cero (pop)" },
+      22: { mnemonic: "STORE",      sopito: "76776", args: 1, desc: "Guarda tope en celda de memoria ID" },
+      23: { mnemonic: "LOAD",       sopito: "76777", args: 1, desc: "Carga valor de celda ID a la pila" },
+      24: { mnemonic: "PRINT_NUM",  sopito: "77666", args: 0, desc: "Imprime entero del tope" },
+      25: { mnemonic: "PRINT_CHAR", sopito: "77667", args: 0, desc: "Imprime carácter ASCII del tope" },
+      26: { mnemonic: "PRINT_STR",  sopito: "77676", args: -1, desc: "Imprime cadena de bytes 6/7" },
+      27: { mnemonic: "PRINT_NL",   sopito: "77677", args: 0, desc: "Imprime salto de línea (\\n)" },
+      28: { mnemonic: "READ_NUM",   sopito: "77766", args: 0, desc: "Lee un entero de stdin" },
+      29: { mnemonic: "READ_CHAR",  sopito: "77767", args: 0, desc: "Lee un carácter de stdin" },
+      30: { mnemonic: "CALL",       sopito: "77776", args: 1, desc: "Llama a subrutina en etiqueta ID" },
+      31: { mnemonic: "RET",        sopito: "77777", args: 0, desc: "Retorna de la subrutina actual" },
+    };
+
+    const MNEMONIC_TO_OP = {};
+    const SOPITO_TO_OP = {};
+    for (const [op, info] of Object.entries(OPCODE_TABLE)) {
+      MNEMONIC_TO_OP[info.mnemonic] = Number(op);
+      SOPITO_TO_OP[info.sopito] = Number(op);
+    }
+
+    // --- Funciones de Conversión Numérica y de Texto ---
+    function sopitoToBin(s) {
+      return s.replace(/[^67]/g, '').replace(/6/g, '0').replace(/7/g, '1');
+    }
+
+    function binToSopito(b) {
+      return b.replace(/[^01]/g, '').replace(/0/g, '6').replace(/1/g, '7');
+    }
+
+    function sopitoToInt(s) {
+      const b = sopitoToBin(s);
+      if (!b) return 0n;
+      return BigInt('0b' + b);
+    }
+
+    function intToSopito(n, minBits = 1) {
+      let b = BigInt(n).toString(2);
+      if (b.length < minBits) b = b.padStart(minBits, '0');
+      return binToSopito(b);
+    }
+
+    function textToSopitoBytes(text) {
+      const encoder = new TextEncoder();
+      const raw = encoder.encode(text);
+      const res = [];
+      for (const byte of raw) {
+        const bStr = byte.toString(2).padStart(8, '0');
+        res.push(binToSopito(bStr));
+      }
+      return res;
+    }
+
+    function sopitoBytesToText(bytesList) {
+      const u8 = new Uint8Array(bytesList.length);
+      for (let i = 0; i < bytesList.length; i++) {
+        u8[i] = Number(sopitoToInt(bytesList[i])) & 0xFF;
+      }
+      return new TextDecoder().decode(u8);
+    }
+
+    // --- Parser de Código Fuente (.spp) ---
+    function parseSpp(code) {
+      const tokens = [];
+      const lines = code.split('\n');
+
+      for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
+        let line = lines[lineIdx];
+        // Quitar comentarios (#, //, ;)
+        let clean = "";
+        for (let i = 0; i < line.length; i++) {
+          if (line[i] === '#' || line[i] === ';' || (line[i] === '/' && line[i+1] === '/')) break;
+          clean += line[i];
+        }
+
+        const words = clean.trim().split(/\s+/).filter(Boolean);
+        for (const w of words) {
+          if (!/^[67]+$/.test(w)) {
+            throw new Error(`[Línea ${lineIdx + 1}] Token inválido '${w}'. En Sopito++ sólo se permiten los dígitos 6 (0) y 7 (1).`);
+          }
+          tokens.push({ text: w, line: lineIdx + 1 });
+        }
+      }
+
+      const instructions = [];
+      let idx = 0;
+      while (idx < tokens.length) {
+        const tok = tokens[idx++];
+        if (tok.text.length !== 5) {
+          throw new Error(`[Línea ${tok.line}] Opcode inválido '${tok.text}'. Cada opcode debe tener exactamente 5 dígitos de 6s y 7s.`);
+        }
+        if (!(tok.text in SOPITO_TO_OP)) {
+          throw new Error(`[Línea ${tok.line}] Opcode desconocido '${tok.text}'.`);
+        }
+
+        const op = SOPITO_TO_OP[tok.text];
+        const info = OPCODE_TABLE[op];
+
+        if (info.args === 0) {
+          instructions.push({ op, args: [], line: tok.line, raw: tok.text });
+        } else if (info.args === 1) {
+          if (idx >= tokens.length) throw new Error(`[Línea ${tok.line}] ${info.mnemonic} requiere 1 argumento.`);
+          const argTok = tokens[idx++];
+          const val = sopitoToInt(argTok.text);
+          instructions.push({ op, args: [val], line: tok.line, raw: `${tok.text} ${argTok.text}` });
+        } else if (info.args === -1) {
+          if (idx >= tokens.length) throw new Error(`[Línea ${tok.line}] PRINT_STR requiere longitud de cadena.`);
+          const lenTok = tokens[idx++];
+          const len = Number(sopitoToInt(lenTok.text));
+          const bytes = [];
+          for (let i = 0; i < len; i++) {
+            if (idx >= tokens.length) throw new Error(`[Línea ${tok.line}] PRINT_STR esperaba ${len} bytes.`);
+            bytes.push(tokens[idx++].text);
+          }
+          const text = sopitoBytesToText(bytes);
+          instructions.push({ op, args: [text], line: tok.line, raw: `${tok.text} ...` });
+        }
+      }
+      return instructions;
+    }
+
+    // --- Parser de Código Ensamblador (.sasm) ---
+    function parseSasm(code) {
+      const lines = code.split('\n');
+      const instructions = [];
+
+      for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
+        let line = lines[lineIdx].trim();
+        if (!line || line.startsWith('#') || line.startsWith(';') || line.startsWith('//')) continue;
+
+        // Quitar comentarios
+        let clean = "";
+        let inQuotes = false;
+        for (let i = 0; i < line.length; i++) {
+          if (line[i] === '"') inQuotes = !inQuotes;
+          else if (!inQuotes && (line[i] === '#' || line[i] === ';' || (line[i] === '/' && line[i+1] === '/'))) break;
+          clean += line[i];
+        }
+        clean = clean.trim();
+        if (!clean) continue;
+
+        const match = clean.match(/^([A-Z_]+)(?:\s+(.*))?$/i);
+        if (!match) continue;
+        const mnemonic = match[1].toUpperCase();
+        const argStr = match[2] ? match[2].trim() : "";
+
+        if (mnemonic === "PUSH_STR") {
+          const strMatch = argStr.match(/^"((?:[^"\\]|\\.)*)"$/);
+          if (!strMatch) throw new Error(`[Línea ${lineIdx + 1}] PUSH_STR requiere cadena entre comillas.`);
+          const text = JSON.parse(`"${strMatch[1]}"`);
+          instructions.push({ op: MNEMONIC_TO_OP["PRINT_STR"], args: [text], line: lineIdx + 1 });
+          continue;
+        }
+
+        if (!(mnemonic in MNEMONIC_TO_OP)) {
+          throw new Error(`[Línea ${lineIdx + 1}] Mnemónico desconocido '${mnemonic}'.`);
+        }
+
+        const op = MNEMONIC_TO_OP[mnemonic];
+        const info = OPCODE_TABLE[op];
+
+        if (info.args === 0) {
+          instructions.push({ op, args: [], line: lineIdx + 1 });
+        } else if (info.args === 1) {
+          let val;
+          if (/^[67]+$/.test(argStr)) {
+            val = sopitoToInt(argStr);
+          } else {
+            val = BigInt(argStr);
+          }
+          instructions.push({ op, args: [val], line: lineIdx + 1 });
+        }
+      }
+      return instructions;
+    }
+
+    // --- Ensamblador (.sasm -> .spp) ---
+    function assembleToSpp(instructions) {
+      const out = [
+        "# ===========================================",
+        "# Código Ensamblado en Sopito++ (6=0, 7=1)",
+        "# ===========================================\n"
+      ];
+
+      for (const inst of instructions) {
+        const info = OPCODE_TABLE[inst.op];
+        if (info.args === 0) {
+          out.push(`${info.sopito.padEnd(8)} # ${info.mnemonic}`);
+        } else if (info.args === 1) {
+          const valSop = intToSopito(inst.args[0]);
+          out.push(`${info.sopito} ${valSop.padEnd(10)} # ${info.mnemonic} ${inst.args[0]}`);
+        } else if (info.args === -1) {
+          const text = inst.args[0];
+          const bytes = textToSopitoBytes(text);
+          const lenSop = intToSopito(bytes.length);
+          out.push(`${info.sopito} ${lenSop} ${bytes.join(' ')} # PRINT_STR ${JSON.stringify(text)}`);
+        }
+      }
+      return out.join('\n');
+    }
+
+    // --- Desensamblador (.spp -> .sasm) ---
+    function disassembleToSasm(instructions) {
+      const out = ["# --- Desensamblado de Sopito++ ---"];
+      for (const inst of instructions) {
+        const info = OPCODE_TABLE[inst.op];
+        if (info.args === 0) {
+          out.push(`${info.mnemonic.padEnd(12)} # [${info.sopito}]`);
+        } else if (info.args === 1) {
+          out.push(`${info.mnemonic.padEnd(10)} ${inst.args[0]}`);
+        } else if (info.args === -1) {
+          out.push(`PUSH_STR ${JSON.stringify(inst.args[0])}`);
+        }
+      }
+      return out.join('\n');
+    }
+
+    // --- Compilador Oficial a C++ Moderno ---
+    function compileToCpp(instructions) {
+      const lines = [
+        "// ===========================================================================",
+        "// Generado automáticamente por Sopito++ Web Compiler",
+        "// Dialecto: Sopito++ (6 = bit 0, 7 = bit 1)",
+        "// ===========================================================================",
+        "#include <iostream>",
+        "#include <vector>",
+        "#include <unordered_map>",
+        "#include <cstdint>",
+        "#include <string>",
+        "",
+        "int main() {",
+        "    // Pila de datos principal (enteros de 64 bits)",
+        "    std::vector<int64_t> stack;",
+        "    stack.reserve(1024);",
+        "",
+        "    // Memoria direccionable de variables",
+        "    std::unordered_map<int64_t, int64_t> memory;",
+        "",
+        "    // Pila de llamadas para subrutinas",
+        "    std::vector<int> call_stack;",
+        "    call_stack.reserve(64);",
+        "",
+        "    auto pop = [&]() -> int64_t {",
+        "        if (stack.empty()) return 0;",
+        "        int64_t v = stack.back();",
+        "        stack.pop_back();",
+        "        return v;",
+        "    };",
+        "",
+        "    auto top = [&]() -> int64_t {",
+        "        return stack.empty() ? 0 : stack.back();",
+        "    };",
+        "",
+        "    // --- Instrucciones ---"
+      ];
+
+      let callCounter = 0;
+      const callPoints = [];
+      for (const inst of instructions) {
+        if (inst.op === MNEMONIC_TO_OP["CALL"]) {
+          callCounter++;
+          callPoints.push(callCounter);
+        }
+      }
+
+      let currentCall = 0;
+      for (const inst of instructions) {
+        const info = OPCODE_TABLE[inst.op];
+        const m = info.mnemonic;
+
+        lines.push(`    // [${info.sopito}] ${m}`);
+
+        if (m === "HALT") lines.push("    return 0;");
+        else if (m === "PUSH") lines.push(`    stack.push_back(${inst.args[0]}LL);`);
+        else if (m === "POP") lines.push("    pop();");
+        else if (m === "DUP") lines.push("    stack.push_back(top());");
+        else if (m === "SWAP") lines.push("    if (stack.size() >= 2) std::swap(stack[stack.size()-1], stack[stack.size()-2]);");
+        else if (m === "OVER") lines.push("    if (stack.size() >= 2) stack.push_back(stack[stack.size()-2]);");
+        else if (m === "ADD") lines.push("    { int64_t a = pop(); if (!stack.empty()) stack.back() += a; }");
+        else if (m === "SUB") lines.push("    { int64_t a = pop(); if (!stack.empty()) stack.back() -= a; }");
+        else if (m === "MUL") lines.push("    { int64_t a = pop(); if (!stack.empty()) stack.back() *= a; }");
+        else if (m === "DIV") lines.push("    { int64_t a = pop(); if (!stack.empty()) stack.back() = (a != 0 ? stack.back() / a : 0); }");
+        else if (m === "MOD") lines.push("    { int64_t a = pop(); if (!stack.empty()) stack.back() = (a != 0 ? stack.back() % a : 0); }");
+        else if (m === "NEG") lines.push("    if (!stack.empty()) stack.back() = -stack.back();");
+        else if (m === "EQ") lines.push("    { int64_t a = pop(); if (!stack.empty()) stack.back() = (stack.back() == a ? 1 : 0); }");
+        else if (m === "LT") lines.push("    { int64_t a = pop(); if (!stack.empty()) stack.back() = (stack.back() < a ? 1 : 0); }");
+        else if (m === "GT") lines.push("    { int64_t a = pop(); if (!stack.empty()) stack.back() = (stack.back() > a ? 1 : 0); }");
+        else if (m === "NOT") lines.push("    if (!stack.empty()) stack.back() = (stack.back() == 0 ? 1 : 0);");
+        else if (m === "AND") lines.push("    { int64_t a = pop(); if (!stack.empty()) stack.back() = (stack.back() & a); }");
+        else if (m === "OR") lines.push("    { int64_t a = pop(); if (!stack.empty()) stack.back() = (stack.back() | a); }");
+        else if (m === "LABEL") lines.push(`sopito_label_${inst.args[0]}:`);
+        else if (m === "JMP") lines.push(`    goto sopito_label_${inst.args[0]};`);
+        else if (m === "JZ") lines.push(`    if (pop() == 0) goto sopito_label_${inst.args[0]};`);
+        else if (m === "JNZ") lines.push(`    if (pop() != 0) goto sopito_label_${inst.args[0]};`);
+        else if (m === "STORE") lines.push(`    memory[${inst.args[0]}LL] = pop();`);
+        else if (m === "LOAD") lines.push(`    stack.push_back(memory[${inst.args[0]}LL]);`);
+        else if (m === "PRINT_NUM") lines.push("    std::cout << pop();");
+        else if (m === "PRINT_CHAR") lines.push("    std::cout << static_cast<char>(pop());");
+        else if (m === "PRINT_STR") lines.push(`    std::cout << ${JSON.stringify(inst.args[0])};`);
+        else if (m === "PRINT_NL") lines.push("    std::cout << '\\n';");
+        else if (m === "READ_NUM") lines.push("    { int64_t v = 0; if (std::cin >> v) stack.push_back(v); else stack.push_back(0); }");
+        else if (m === "READ_CHAR") lines.push("    { char c = 0; if (std::cin.get(c)) stack.push_back(static_cast<uint8_t>(c)); else stack.push_back(-1); }");
+        else if (m === "CALL") {
+          currentCall++;
+          lines.push(`    call_stack.push_back(${currentCall});`);
+          lines.push(`    goto sopito_label_${inst.args[0]};`);
+          lines.push(`sopito_ret_point_${currentCall}:`);
+        } else if (m === "RET") {
+          lines.push("    if (!call_stack.empty()) {");
+          lines.push("        int ret_id = call_stack.back(); call_stack.pop_back();");
+          lines.push("        switch(ret_id) {");
+          for (const pt of callPoints) lines.push(`            case ${pt}: goto sopito_ret_point_${pt};`);
+          lines.push("            default: break;");
+          lines.push("        }");
+          lines.push("    }");
+        }
+      }
+
+      lines.push("", "    return 0;", "}");
+      return lines.join('\n');
+    }
+
+    // --- Máquina Virtual en el Navegador ---
+    class WebVM {
+      constructor(instructions, onOutput, onStateUpdate) {
+        this.instructions = instructions;
+        this.onOutput = onOutput;
+        this.onStateUpdate = onStateUpdate;
+        this.stack = [];
+        this.memory = {};
+        this.callStack = [];
+        this.labels = {};
+        this.ip = 0;
+
+        for (let i = 0; i < instructions.length; i++) {
+          if (instructions[i].op === MNEMONIC_TO_OP["LABEL"]) {
+            this.labels[instructions[i].args[0].toString()] = i;
+          }
+        }
+      }
+
+      run() {
+        let maxSteps = 100000;
+        let steps = 0;
+
+        while (this.ip < this.instructions.length && steps < maxSteps) {
+          steps++;
+          const inst = this.instructions[this.ip];
+          const m = OPCODE_TABLE[inst.op].mnemonic;
+
+          if (m === "HALT") break;
+          else if (m === "PUSH") {
+            this.stack.push(inst.args[0]);
+            this.ip++;
+          } else if (m === "POP") {
+            this.stack.pop();
+            this.ip++;
+          } else if (m === "DUP") {
+            if (this.stack.length > 0) this.stack.push(this.stack[this.stack.length - 1]);
+            this.ip++;
+          } else if (m === "SWAP") {
+            if (this.stack.length >= 2) {
+              const a = this.stack.pop();
+              const b = this.stack.pop();
+              this.stack.push(a);
+              this.stack.push(b);
+            }
+            this.ip++;
+          } else if (m === "OVER") {
+            if (this.stack.length >= 2) this.stack.push(this.stack[this.stack.length - 2]);
+            this.ip++;
+          } else if (m === "ADD") {
+            if (this.stack.length >= 2) {
+              const a = this.stack.pop();
+              const b = this.stack.pop();
+              this.stack.push(b + a);
+            }
+            this.ip++;
+          } else if (m === "SUB") {
+            if (this.stack.length >= 2) {
+              const a = this.stack.pop();
+              const b = this.stack.pop();
+              this.stack.push(b - a);
+            }
+            this.ip++;
+          } else if (m === "MUL") {
+            if (this.stack.length >= 2) {
+              const a = this.stack.pop();
+              const b = this.stack.pop();
+              this.stack.push(b * a);
+            }
+            this.ip++;
+          } else if (m === "DIV") {
+            if (this.stack.length >= 2) {
+              const a = this.stack.pop();
+              const b = this.stack.pop();
+              this.stack.push(a !== 0n ? b / a : 0n);
+            }
+            this.ip++;
+          } else if (m === "MOD") {
+            if (this.stack.length >= 2) {
+              const a = this.stack.pop();
+              const b = this.stack.pop();
+              this.stack.push(a !== 0n ? b % a : 0n);
+            }
+            this.ip++;
+          } else if (m === "NEG") {
+            if (this.stack.length > 0) this.stack.push(-this.stack.pop());
+            this.ip++;
+          } else if (m === "EQ") {
+            if (this.stack.length >= 2) {
+              const a = this.stack.pop();
+              const b = this.stack.pop();
+              this.stack.push(b === a ? 1n : 0n);
+            }
+            this.ip++;
+          } else if (m === "LT") {
+            if (this.stack.length >= 2) {
+              const a = this.stack.pop();
+              const b = this.stack.pop();
+              this.stack.push(b < a ? 1n : 0n);
+            }
+            this.ip++;
+          } else if (m === "GT") {
+            if (this.stack.length >= 2) {
+              const a = this.stack.pop();
+              const b = this.stack.pop();
+              this.stack.push(b > a ? 1n : 0n);
+            }
+            this.ip++;
+          } else if (m === "NOT") {
+            if (this.stack.length > 0) this.stack.push(this.stack.pop() === 0n ? 1n : 0n);
+            this.ip++;
+          } else if (m === "AND") {
+            if (this.stack.length >= 2) {
+              const a = this.stack.pop();
+              const b = this.stack.pop();
+              this.stack.push(b & a);
+            }
+            this.ip++;
+          } else if (m === "OR") {
+            if (this.stack.length >= 2) {
+              const a = this.stack.pop();
+              const b = this.stack.pop();
+              this.stack.push(b | a);
+            }
+            this.ip++;
+          } else if (m === "LABEL") {
+            this.ip++;
+          } else if (m === "JMP") {
+            const lbl = inst.args[0].toString();
+            if (lbl in this.labels) this.ip = this.labels[lbl] + 1;
+            else throw new Error(`Etiqueta no encontrada: ${lbl}`);
+          } else if (m === "JZ") {
+            const cond = this.stack.pop() || 0n;
+            const lbl = inst.args[0].toString();
+            if (cond === 0n) {
+              if (lbl in this.labels) this.ip = this.labels[lbl] + 1;
+              else throw new Error(`Etiqueta no encontrada: ${lbl}`);
+            } else {
+              this.ip++;
+            }
+          } else if (m === "JNZ") {
+            const cond = this.stack.pop() || 0n;
+            const lbl = inst.args[0].toString();
+            if (cond !== 0n) {
+              if (lbl in this.labels) this.ip = this.labels[lbl] + 1;
+              else throw new Error(`Etiqueta no encontrada: ${lbl}`);
+            } else {
+              this.ip++;
+            }
+          } else if (m === "STORE") {
+            const id = inst.args[0].toString();
+            this.memory[id] = this.stack.pop() || 0n;
+            this.ip++;
+          } else if (m === "LOAD") {
+            const id = inst.args[0].toString();
+            this.stack.push(this.memory[id] || 0n);
+            this.ip++;
+          } else if (m === "PRINT_NUM") {
+            const val = this.stack.pop() || 0n;
+            this.onOutput(val.toString());
+            this.ip++;
+          } else if (m === "PRINT_CHAR") {
+            const val = Number(this.stack.pop() || 0n);
+            this.onOutput(String.fromCharCode(val & 0xFF));
+            this.ip++;
+          } else if (m === "PRINT_STR") {
+            this.onOutput(inst.args[0]);
+            this.ip++;
+          } else if (m === "PRINT_NL") {
+            this.onOutput("\n");
+            this.ip++;
+          } else if (m === "CALL") {
+            const lbl = inst.args[0].toString();
+            if (lbl in this.labels) {
+              this.callStack.push(this.ip + 1);
+              this.ip = this.labels[lbl] + 1;
+            } else throw new Error(`Subrutina no encontrada: ${lbl}`);
+          } else if (m === "RET") {
+            if (this.callStack.length > 0) this.ip = this.callStack.pop();
+            else break;
+          } else {
+            this.ip++;
+          }
+        }
+
+        if (steps >= maxSteps) {
+          this.onOutput("\n[ADVERTENCIA: Límite de 100,000 pasos alcanzado para evitar bucles infinitos]\n");
+        }
+        this.onStateUpdate(this.stack, this.memory);
+      }
+    }
+
+    // --- Ejemplos Integrados ---
+    const EXAMPLES = {
+      "01": {
+        sasm: `# Ejemplo 01: Hola Mundo\nPUSH_STR "¡Hola desde Sopito++! (Donde 6 es 0 y 7 es 1)\\n"\nHALT`,
+        spp: `# Ejemplo 01: Hola Mundo en Puro 6 y 7\n77676 767777 77666676 76766667 67667666 67767777 67767766 67766667 66766666 67766766 67766767 67776677 67766766 67766767 66766666 67676677 67767777 67776666 67767667 67776766 67767777 66767677 66767677 66766667 66766666 66767666 67666766 67767777 67767776 67766766 67766767 66766666 66776776 66766666 67766767 67776677 66766666 66776666 66766666 67777667 66766666 66776777 66766666 67766767 67776677 66766666 66776667 66767667 66667676\n66666`
+      },
+      "02": {
+        sasm: `# Ejemplo 02: Suma 6 + 7\nPUSH_STR "Calculando 6 + 7 en Sopito++...\\n"\nPUSH_STR "Resultado: "\nPUSH 6\nPUSH 7\nADD\nPRINT_NUM\nPRINT_NL\nHALT`,
+        spp: `# Ejemplo 02: Suma en Puro 6 y 7\n77676 766666 67666677 67766667 67767766 67766677 67776767 67767766 67766667 67767776 67766766 67767777 66766666 66776776 66766666 66767677 66766666 66776777 66766666 67766767 67767776 66766666 67676677 67767777 67776666 67767667 67776766 67767777 66767677 66767677 66767776 66767776 66767776 66667676\n77676 7677 67676676 67766767 67776677 67776767 67767766 67776766 67766667 67766766 67767777 66777676 66766666\n66667 776          # PUSH 6\n66667 777          # PUSH 7\n66776              # ADD\n77666              # PRINT_NUM\n77677              # PRINT_NL\n66666              # HALT`
+      },
+      "03": {
+        sasm: `# Ejemplo 03: Bucle Contador 1 al 5\nPUSH_STR "Contando del 1 al 5:\\n"\nPUSH 1\nSTORE 0\nLABEL 1\nLOAD 0\nPRINT_NUM\nPRINT_NL\nLOAD 0\nPUSH 1\nADD\nSTORE 0\nLOAD 0\nPUSH 5\nGT\nJZ 1\nPUSH_STR "¡Completado!\\n"\nHALT`,
+        spp: `# Ejemplo 03: Contador en Puro 6 y 7\n66667 7\n76776 6\n76676 7\n76777 6\n77666\n77677\n76777 6\n66667 7\n66776\n76776 6\n76777 6\n66667 767\n67776\n76766 7\n66666`
+      },
+      "04": {
+        sasm: `# Ejemplo 04: Fibonacci\nPUSH_STR "Fibonacci: "\nPUSH 0\nSTORE 0\nPUSH 1\nSTORE 1\nPUSH 8\nSTORE 2\nPUSH 0\nSTORE 3\nLABEL 10\nLOAD 0\nPRINT_NUM\nPUSH_STR " "\nLOAD 0\nLOAD 1\nADD\nSTORE 4\nLOAD 1\nSTORE 0\nLOAD 4\nSTORE 1\nLOAD 3\nPUSH 1\nADD\nSTORE 3\nLOAD 3\nLOAD 2\nLT\nJNZ 10\nPRINT_NL\nHALT`,
+        spp: `# Ejemplo 04: Fibonacci en 6 y 7\n66667 6\n76776 6\n66667 7\n76776 7\n66667 7666\n76776 76\n66667 6\n76776 77\n76676 7676\n76777 6\n77666\n77676 7 66766666\n76777 6\n76777 7\n66776\n76776 766\n76777 7\n76776 6\n76777 766\n76776 7\n76777 77\n66667 7\n66776\n76776 77\n76777 77\n76777 76\n67767\n76767 7676\n77677\n66666`
+      },
+      "05": {
+        sasm: `# Ejemplo 05: Factorial de 5\nPUSH_STR "Calculando Factorial(5)...\\n"\nPUSH 5\nSTORE 0\nPUSH 1\nSTORE 1\nCALL 10\nPUSH_STR "Resultado = "\nLOAD 1\nPRINT_NUM\nPRINT_NL\nHALT\n\nLABEL 10\nLOAD 0\nPUSH 1\nEQ\nJNZ 20\nLOAD 1\nLOAD 0\nMUL\nSTORE 1\nLOAD 0\nPUSH 1\nSUB\nSTORE 0\nJMP 10\n\nLABEL 20\nRET`,
+        spp: `# Ejemplo 05: Factorial en 6 y 7\n66667 767\n76776 6\n66667 7\n76776 7\n77776 7676\n76777 7\n77666\n77677\n66666\n76676 7676\n76777 6\n66667 7\n67766\n76767 76766\n76777 7\n76777 6\n67666\n76776 7\n76777 6\n66667 7\n66777\n76776 6\n76677 7676\n76676 76766\n77777`
+      }
+    };
+
+    // --- UI Logic & Event Handlers ---
+    const editor = document.getElementById("editor");
+    const charCount = document.getElementById("charCount");
+    const exampleSelect = document.getElementById("exampleSelect");
+    const syntaxMode = document.getElementById("syntaxMode");
+    const btnAssemble = document.getElementById("btnAssemble");
+    const btnCompile = document.getElementById("btnCompile");
+    const btnRun = document.getElementById("btnRun");
+    const btnClearTerm = document.getElementById("btnClearTerm");
+    const terminalOutput = document.getElementById("terminalOutput");
+    const cppOutput = document.getElementById("cppOutput");
+    const tabTerminal = document.getElementById("tabTerminal");
+    const tabCpp = document.getElementById("tabCpp");
+    const viewTerminal = document.getElementById("viewTerminal");
+    const viewCpp = document.getElementById("viewCpp");
+    const stackView = document.getElementById("stackView");
+    const stackSize = document.getElementById("stackSize");
+    const memoryView = document.getElementById("memoryView");
+    const btnCopyOutput = document.getElementById("btnCopyOutput");
+    const btnDownloadSrc = document.getElementById("btnDownloadSrc");
+    const btnDownloadCpp = document.getElementById("btnDownloadCpp");
+
+    // Converter elements
+    const inputDecimal = document.getElementById("inputDecimal");
+    const outputSopitoNum = document.getElementById("outputSopitoNum");
+    const inputText = document.getElementById("inputText");
+    const outputSopitoBytes = document.getElementById("outputSopitoBytes");
+
+    // Load initial example
+    function loadExample() {
+      const exKey = exampleSelect.value;
+      const mode = syntaxMode.value;
+      editor.value = EXAMPLES[exKey][mode];
+      updateCharCount();
+    }
+
+    function updateCharCount() {
+      const len = editor.value.length;
+      const sixSeven = (editor.value.match(/[67]/g) || []).length;
+      charCount.textContent = `${len} caracteres (${sixSeven} bits 6/7)`;
+    }
+
+    editor.addEventListener("input", updateCharCount);
+    exampleSelect.addEventListener("change", loadExample);
+    syntaxMode.addEventListener("change", loadExample);
+
+    // Tab switching
+    tabTerminal.addEventListener("click", () => {
+      tabTerminal.classList.add("active");
+      tabCpp.classList.remove("active");
+      viewTerminal.style.display = "flex";
+      viewCpp.style.display = "none";
+      btnDownloadCpp.style.display = "none";
+    });
+
+    tabCpp.addEventListener("click", () => {
+      tabCpp.classList.add("active");
+      tabTerminal.classList.remove("active");
+      viewTerminal.style.display = "none";
+      viewCpp.style.display = "block";
+      btnDownloadCpp.style.display = "inline-flex";
+    });
+
+    // Assemble / Disassemble toggle
+    btnAssemble.addEventListener("click", () => {
+      try {
+        const text = editor.value.trim();
+        const firstWord = text.split(/\s+/)[0];
+        if (/^[67]+$/.test(firstWord)) {
+          // Es .spp -> Desensamblar a .sasm
+          const insts = parseSpp(text);
+          editor.value = disassembleToSasm(insts);
+          syntaxMode.value = "sasm";
+          logToTerminal("[Info] Código desensamblado con éxito a mnemónicos (.sasm)\n", "info");
+        } else {
+          // Es .sasm -> Ensamblar a .spp
+          const insts = parseSasm(text);
+          editor.value = assembleToSpp(insts);
+          syntaxMode.value = "spp";
+          logToTerminal("[Info] Código ensamblado con éxito a binario 6/7 (.spp)\n", "info");
+        }
+        updateCharCount();
+      } catch (err) {
+        logToTerminal(`[Error] ${err.message}\n`, "error");
+      }
+    });
+
+    // Compile to C++
+    btnCompile.addEventListener("click", () => {
+      try {
+        const text = editor.value.trim();
+        const firstWord = text.split(/\s+/)[0];
+        let insts;
+        if (/^[67]+$/.test(firstWord)) {
+          insts = parseSpp(text);
+        } else {
+          insts = parseSasm(text);
+        }
+
+        const cppCode = compileToCpp(insts);
+        cppOutput.textContent = cppCode;
+        tabCpp.click();
+        logToTerminal("[Info] Código compilado exitosamente a C++ estándar.\n", "info");
+      } catch (err) {
+        logToTerminal(`[Error de Compilación] ${err.message}\n`, "error");
+        tabTerminal.click();
+      }
+    });
+
+    // Run in VM
+    btnRun.addEventListener("click", () => {
+      try {
+        tabTerminal.click();
+        logToTerminal("\n--- Ejecutando Programa en VM Sopito++ ---\n", "info");
+
+        const text = editor.value.trim();
+        const firstWord = text.split(/\s+/)[0];
+        let insts;
+        if (/^[67]+$/.test(firstWord)) {
+          insts = parseSpp(text);
+        } else {
+          insts = parseSasm(text);
+        }
+
+        const vm = new WebVM(insts, (out) => {
+          logToTerminal(out);
+        }, (stack, memory) => {
+          renderInspector(stack, memory);
+        });
+
+        vm.run();
+        logToTerminal("\n[Programa finalizado con código de salida 0]\n", "info");
+      } catch (err) {
+        logToTerminal(`\n[Error de Ejecución] ${err.message}\n`, "error");
+      }
+    });
+
+    function logToTerminal(text, type = "normal") {
+      const span = document.createElement("span");
+      span.className = type;
+      span.textContent = text;
+      terminalOutput.appendChild(span);
+      viewTerminal.scrollTop = viewTerminal.scrollHeight;
+    }
+
+    btnClearTerm.addEventListener("click", () => {
+      terminalOutput.innerHTML = '<span class="info">Consola reiniciada.</span>\n';
+      renderInspector([], {});
+    });
+
+    function renderInspector(stack, memory) {
+      stackSize.textContent = stack.length;
+      if (stack.length === 0) {
+        stackView.innerHTML = '<span style="color: var(--text-muted); font-size: 0.8rem; font-style: italic;">Pila vacía</span>';
+      } else {
+        stackView.innerHTML = "";
+        stack.forEach((val, idx) => {
+          const chip = document.createElement("div");
+          chip.className = "stack-chip";
+          chip.textContent = `${val}`;
+          chip.title = `Índice: ${idx}`;
+          stackView.appendChild(chip);
+        });
+      }
+
+      const memKeys = Object.keys(memory);
+      if (memKeys.length === 0) {
+        memoryView.innerHTML = '<tr><td colspan="2" style="color: var(--text-muted); font-style: italic;">Sin variables</td></tr>';
+      } else {
+        memoryView.innerHTML = "";
+        memKeys.forEach(k => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `<td style="color: var(--accent);">var ${k}</td><td>${memory[k]}</td>`;
+          memoryView.appendChild(tr);
+        });
+      }
+    }
+
+    // Converters logic
+    function updateConverters() {
+      try {
+        const dec = BigInt(inputDecimal.value || 0);
+        outputSopitoNum.value = intToSopito(dec);
+      } catch {
+        outputSopitoNum.value = "";
+      }
+
+      try {
+        const text = inputText.value || "";
+        const bytes = textToSopitoBytes(text);
+        outputSopitoBytes.value = bytes.join(' ');
+      } catch {
+        outputSopitoBytes.value = "";
+      }
+    }
+
+    inputDecimal.addEventListener("input", updateConverters);
+    inputText.addEventListener("input", updateConverters);
+    updateConverters();
+
+    // Copy and Downloads
+    btnCopyOutput.addEventListener("click", () => {
+      const activeText = viewCpp.style.display !== "none" ? cppOutput.textContent : terminalOutput.textContent;
+      navigator.clipboard.writeText(activeText);
+      btnCopyOutput.textContent = "✅ Copiado";
+      setTimeout(() => btnCopyOutput.textContent = "📋 Copiar", 1500);
+    });
+
+    btnDownloadSrc.addEventListener("click", () => {
+      const ext = syntaxMode.value;
+      const blob = new Blob([editor.value], { type: "text/plain;charset=utf-8" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `programa.${ext}`;
+      a.click();
+    });
+
+    btnDownloadCpp.addEventListener("click", () => {
+      const blob = new Blob([cppOutput.textContent], { type: "text/x-c++src;charset=utf-8" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `programa_sopito.cpp`;
+      a.click();
+    });
+
+    // Start
+    loadExample();
+  </script>
+</body>
+</html>
