@@ -3,26 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sopito++ | Compilador Web y Entorno de Desarrollo</title>
-  <meta name="description" content="Compilador web oficial de Sopito++, el lenguaje binario donde 6 es 0 y 7 es 1. Compila a C++ y ejecuta en vivo en el navegador.">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥣</text></svg>">
+  <title>Sopito++ | Entorno y Compilador Web</title>
+  <meta name="description" content="Entorno de desarrollo y compilador web para Sopito++, lenguaje binario donde 6 es 0 y 7 es 1. Transpila a C++17 y ejecuta en máquina virtual de pila.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='4' fill='%2314171f'/><text x='16' y='21' font-size='14' font-family='monospace' font-weight='bold' fill='%23e5a93c' text-anchor='middle'>6/7</text></svg>">
   <style>
     :root {
-      --bg-dark: #0a0d14;
-      --bg-panel: #111622;
-      --bg-card: #182030;
-      --border: #243048;
-      --border-focus: #00e5ff;
-      --accent: #00e5ff;
-      --accent-glow: rgba(0, 229, 255, 0.25);
-      --green: #00ff88;
-      --green-glow: rgba(0, 255, 136, 0.2);
-      --yellow: #ffb703;
-      --red: #ff3366;
-      --text: #e2e8f0;
-      --text-muted: #8899b0;
-      --font-mono: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', Consolas, monospace;
-      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --bg-canvas: #0c0e12;
+      --bg-surface: #13161c;
+      --bg-surface-active: #191c24;
+      --bg-inset: #090a0d;
+      --border-subtle: #20242e;
+      --border-strong: #303746;
+      --border-focus: #e5a93c;
+      --text-main: #e6edf3;
+      --text-muted: #8b949e;
+      --text-dim: #545d68;
+      --accent: #e5a93c;
+      --accent-text: #0c0e12;
+      --accent-tint: rgba(229, 169, 60, 0.12);
+      --success: #3fb950;
+      --danger: #f85149;
+      --font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+      --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
     }
 
     * {
@@ -32,697 +34,715 @@
     }
 
     body {
-      background: var(--bg-dark);
-      color: var(--text);
-      font-family: var(--font-sans);
-      min-height: 100vh;
+      background-color: var(--bg-canvas);
+      color: var(--text-main);
+      font-family: var(--font-ui);
+      font-size: 13px;
+      line-height: 1.5;
+      height: 100vh;
       display: flex;
       flex-direction: column;
-      overflow-x: hidden;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* Header */
+    /* Top Navigation Shell */
     header {
-      background: rgba(17, 22, 34, 0.85);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-      padding: 0.75rem 1.5rem;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-subtle);
+      height: 48px;
+      padding: 0 16px;
       display: flex;
+      align-items: center;
       justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      flex-shrink: 0;
+      user-select: none;
     }
 
-    .logo-container {
+    .brand {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      text-decoration: none;
-      color: inherit;
+      gap: 12px;
     }
 
-    .logo-icon {
-      font-size: 1.75rem;
-      background: linear-gradient(135deg, var(--accent), var(--green));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 0 10px var(--accent-glow));
-    }
-
-    .logo-title {
-      font-size: 1.25rem;
-      font-weight: 800;
+    .brand-mark {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 13px;
+      background: var(--bg-surface-active);
+      border: 1px solid var(--border-strong);
+      color: var(--accent);
+      padding: 2px 8px;
+      border-radius: 4px;
       letter-spacing: -0.5px;
     }
 
-    .logo-badge {
-      background: rgba(0, 229, 255, 0.12);
-      color: var(--accent);
-      border: 1px solid rgba(0, 229, 255, 0.3);
-      padding: 0.15rem 0.5rem;
-      border-radius: 999px;
-      font-size: 0.75rem;
+    .brand-title {
       font-weight: 600;
+      font-size: 14px;
+      letter-spacing: -0.2px;
+      color: var(--text-main);
+    }
+
+    .brand-tagline {
       font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      border-left: 1px solid var(--border-strong);
+      padding-left: 10px;
     }
 
     .header-links {
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 16px;
     }
 
     .header-link {
       color: var(--text-muted);
       text-decoration: none;
-      font-size: 0.875rem;
-      font-weight: 500;
-      transition: color 0.2s;
-      display: flex;
+      font-size: 12px;
+      display: inline-flex;
       align-items: center;
-      gap: 0.4rem;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: color 0.15s, background-color 0.15s;
     }
 
     .header-link:hover {
-      color: var(--accent);
+      color: var(--text-main);
+      background-color: var(--bg-surface-active);
     }
 
-    /* Main Container */
-    main {
-      flex: 1;
+    /* Sub-header Controls Bar */
+    .controls-bar {
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 8px 16px;
       display: flex;
-      flex-direction: column;
-      padding: 1rem 1.5rem;
-      gap: 1rem;
-      max-width: 1700px;
-      margin: 0 auto;
-      width: 100%;
-    }
-
-    /* Toolbar */
-    .toolbar {
-      background: var(--bg-panel);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 0.75rem 1.25rem;
-      display: flex;
-      flex-wrap: wrap;
+      align-items: center;
       justify-content: space-between;
-      align-items: center;
-      gap: 0.75rem;
+      gap: 12px;
+      flex-wrap: wrap;
+      flex-shrink: 0;
     }
 
-    .toolbar-group {
+    .controls-group {
       display: flex;
       align-items: center;
-      gap: 0.6rem;
-      flex-wrap: wrap;
+      gap: 8px;
     }
 
-    label {
-      font-size: 0.85rem;
+    .field-label {
       color: var(--text-muted);
-      font-weight: 600;
+      font-size: 12px;
+      font-weight: 500;
     }
 
     select, button, input {
       font-family: inherit;
-      font-size: 0.85rem;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: var(--bg-card);
-      color: var(--text);
-      padding: 0.5rem 0.85rem;
+      font-size: 12px;
+      color: var(--text-main);
+      background: var(--bg-canvas);
+      border: 1px solid var(--border-strong);
+      border-radius: 4px;
+      padding: 5px 10px;
       outline: none;
-      transition: all 0.2s ease;
-      cursor: pointer;
+      transition: border-color 0.15s, background-color 0.15s;
     }
 
     select:focus, input:focus {
       border-color: var(--border-focus);
-      box-shadow: 0 0 0 2px var(--accent-glow);
     }
 
+    select {
+      cursor: pointer;
+      padding-right: 24px;
+    }
+
+    /* Action Buttons */
     .btn {
+      font-weight: 600;
+      cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 0.4rem;
-      font-weight: 600;
-      transition: all 0.2s;
+      gap: 6px;
+      white-space: nowrap;
+      border: 1px solid var(--border-strong);
+      background: var(--bg-surface-active);
     }
 
     .btn:hover {
-      transform: translateY(-1px);
+      background: var(--border-strong);
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, #00d2ff 0%, #00f076 100%);
-      color: #061019;
-      border: none;
-      box-shadow: 0 2px 10px rgba(0, 229, 255, 0.3);
+      background: var(--accent);
+      color: var(--accent-text);
+      border-color: var(--accent);
     }
 
     .btn-primary:hover {
-      box-shadow: 0 4px 16px rgba(0, 229, 255, 0.45);
-    }
-
-    .btn-secondary {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      color: var(--text);
-    }
-
-    .btn-secondary:hover {
-      border-color: var(--accent);
-      color: var(--accent);
+      background: #f0b54e;
+      border-color: #f0b54e;
     }
 
     .btn-danger {
-      background: rgba(255, 51, 102, 0.15);
-      border: 1px solid rgba(255, 51, 102, 0.3);
-      color: var(--red);
+      color: var(--danger);
+      border-color: rgba(248, 81, 73, 0.3);
+      background: rgba(248, 81, 73, 0.08);
     }
 
     .btn-danger:hover {
-      background: rgba(255, 51, 102, 0.25);
+      background: rgba(248, 81, 73, 0.18);
     }
 
-    /* Workspace Grid */
-    .workspace {
+    /* Main Split Layout */
+    .workbench {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1rem;
       flex: 1;
-      min-height: 580px;
+      overflow: hidden;
+      background: var(--border-subtle);
+      gap: 1px;
     }
 
-    @media (max-width: 1024px) {
-      .workspace {
+    @media (max-width: 900px) {
+      .workbench {
         grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr;
       }
     }
 
-    /* Card Panels */
     .panel {
-      background: var(--bg-panel);
-      border: 1px solid var(--border);
-      border-radius: 12px;
+      background: var(--bg-surface);
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+      min-width: 0;
     }
 
     .panel-header {
-      background: rgba(24, 32, 48, 0.6);
-      border-bottom: 1px solid var(--border);
-      padding: 0.6rem 1rem;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0 12px;
+      height: 36px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
     }
 
     .panel-tabs {
       display: flex;
-      gap: 0.4rem;
+      height: 100%;
+      gap: 2px;
     }
 
-    .tab-btn {
+    .tab-item {
       background: transparent;
       border: none;
+      border-bottom: 2px solid transparent;
+      border-radius: 0;
       color: var(--text-muted);
-      font-weight: 600;
-      padding: 0.4rem 0.8rem;
-      border-radius: 6px;
-      font-size: 0.82rem;
+      font-weight: 500;
+      font-size: 12px;
+      padding: 0 12px;
+      height: 100%;
+      cursor: pointer;
     }
 
-    .tab-btn:hover {
-      color: var(--text);
-      background: rgba(255, 255, 255, 0.05);
+    .tab-item:hover {
+      color: var(--text-main);
+      background: transparent;
     }
 
-    .tab-btn.active {
-      color: var(--accent);
-      background: rgba(0, 229, 255, 0.12);
-      border: 1px solid rgba(0, 229, 255, 0.25);
+    .tab-item.active {
+      color: var(--text-main);
+      border-bottom-color: var(--accent);
+      background: var(--bg-canvas);
     }
 
-    .panel-actions {
+    .panel-tools {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 6px;
     }
 
-    .icon-btn {
+    .tool-btn {
+      padding: 3px 8px;
+      font-size: 11px;
       background: transparent;
       border: 1px solid transparent;
       color: var(--text-muted);
-      padding: 0.35rem 0.6rem;
-      border-radius: 6px;
-      font-size: 0.8rem;
+      cursor: pointer;
     }
 
-    .icon-btn:hover {
-      border-color: var(--border);
-      color: var(--text);
-      background: var(--bg-card);
+    .tool-btn:hover {
+      color: var(--text-main);
+      border-color: var(--border-subtle);
+      background: var(--bg-surface-active);
     }
 
-    /* Code Editor Container */
-    .editor-wrapper {
-      position: relative;
+    /* Code Editor with Gutter */
+    .editor-container {
       flex: 1;
       display: flex;
-      min-height: 380px;
-      background: #0d111a;
+      background: var(--bg-inset);
+      overflow: hidden;
+      position: relative;
     }
 
-    textarea.code-editor {
-      width: 100%;
-      height: 100%;
-      background: transparent;
-      color: #f1f5f9;
+    .editor-gutter {
+      width: 48px;
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border-subtle);
+      padding: 12px 0;
+      color: var(--text-dim);
       font-family: var(--font-mono);
-      font-size: 0.92rem;
-      line-height: 1.55;
-      padding: 1rem;
+      font-size: 12px;
+      line-height: 20px;
+      text-align: right;
+      padding-right: 10px;
+      user-select: none;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .editor-textarea {
+      flex: 1;
+      background: transparent;
+      color: var(--text-main);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 20px;
+      padding: 12px;
       border: none;
-      resize: none;
       outline: none;
+      resize: none;
       tab-size: 4;
       white-space: pre;
       overflow-wrap: normal;
       overflow-x: auto;
+      overflow-y: auto;
     }
 
-    /* Output Panels */
-    .output-container {
+    /* Terminal & Output Views */
+    .view-wrapper {
       flex: 1;
       display: flex;
       flex-direction: column;
-      position: relative;
-      background: #0d111a;
+      overflow: hidden;
+      background: var(--bg-inset);
+    }
+
+    .terminal-screen {
+      flex: 1;
+      padding: 12px 16px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.6;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .log-info {
+      color: var(--text-muted);
+    }
+
+    .log-success {
+      color: var(--success);
+    }
+
+    .log-output {
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    .log-error {
+      color: var(--danger);
+      font-weight: 600;
+    }
+
+    /* C++ Code Display */
+    .code-view {
+      flex: 1;
+      padding: 14px 16px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.55;
+      color: #9cdcfe;
+      overflow: auto;
+      white-space: pre;
+      background: var(--bg-inset);
+    }
+
+    /* State Inspector (Stack & Memory) */
+    .state-inspector {
+      height: 190px;
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border-subtle);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .inspector-column {
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--border-subtle);
       overflow: hidden;
     }
 
-    .code-display {
-      flex: 1;
-      margin: 0;
-      padding: 1rem;
-      font-family: var(--font-mono);
-      font-size: 0.88rem;
-      line-height: 1.5;
-      color: #a5f3fc;
-      overflow: auto;
-      white-space: pre;
-      background: transparent;
+    .inspector-column:last-child {
+      border-right: none;
     }
 
-    /* Terminal Console */
-    .terminal-container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      background: #090c12;
-      font-family: var(--font-mono);
-      padding: 1rem;
-      overflow-y: auto;
-    }
-
-    .terminal-output {
-      color: var(--green);
-      white-space: pre-wrap;
-      word-break: break-all;
-      line-height: 1.6;
-      font-size: 0.9rem;
-    }
-
-    .terminal-output .info {
-      color: var(--accent);
-    }
-
-    .terminal-output .error {
-      color: var(--red);
-      font-weight: bold;
-    }
-
-    .terminal-prompt {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin-top: 0.5rem;
-      padding-top: 0.5rem;
-      border-top: 1px dashed rgba(255, 255, 255, 0.1);
-    }
-
-    .prompt-label {
-      color: var(--yellow);
-      font-weight: bold;
-      font-size: 0.85rem;
-    }
-
-    .prompt-input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      color: #fff;
-      font-family: var(--font-mono);
-      outline: none;
-      padding: 0.2rem 0.4rem;
-    }
-
-    /* Stack & Memory Inspector */
-    .inspector-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.75rem;
-      padding: 0.75rem;
-      background: var(--bg-panel);
-      border-top: 1px solid var(--border);
-      max-height: 220px;
-      overflow-y: auto;
-    }
-
-    .inspector-box {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 0.6rem 0.8rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-    }
-
-    .inspector-header {
-      font-size: 0.75rem;
-      font-weight: 700;
+    .column-title {
+      padding: 6px 12px;
+      font-size: 11px;
+      font-weight: 600;
       color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-surface);
       display: flex;
       justify-content: space-between;
     }
 
-    .stack-items {
+    .column-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 12px;
+    }
+
+    .stack-lane {
       display: flex;
-      flex-wrap: wrap-reverse;
-      gap: 0.4rem;
-      min-height: 38px;
-      align-items: center;
+      flex-direction: column-reverse;
+      gap: 4px;
     }
 
-    .stack-chip {
-      background: rgba(0, 229, 255, 0.15);
-      border: 1px solid rgba(0, 229, 255, 0.4);
-      color: var(--accent);
-      padding: 0.2rem 0.55rem;
-      border-radius: 6px;
+    .stack-cell {
+      display: flex;
+      justify-content: space-between;
       font-family: var(--font-mono);
-      font-size: 0.8rem;
+      font-size: 12px;
+      padding: 3px 8px;
+      background: var(--bg-surface-active);
+      border: 1px solid var(--border-subtle);
+      border-radius: 3px;
+    }
+
+    .stack-cell.top-cell {
+      border-color: var(--accent);
+      background: var(--accent-tint);
+    }
+
+    .cell-idx {
+      color: var(--text-dim);
+    }
+
+    .cell-val {
       font-weight: 600;
-      animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
-    @keyframes popIn {
-      from { transform: scale(0.6); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-
-    .memory-table {
+    .data-table {
       width: 100%;
       border-collapse: collapse;
       font-family: var(--font-mono);
-      font-size: 0.8rem;
+      font-size: 12px;
     }
 
-    .memory-table th, .memory-table td {
-      padding: 0.25rem 0.5rem;
+    .data-table th, .data-table td {
       text-align: left;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 4px 6px;
+      border-bottom: 1px solid var(--border-subtle);
     }
 
-    .memory-table th {
-      color: var(--text-muted);
-      font-weight: 600;
+    .data-table th {
+      color: var(--text-dim);
+      font-weight: 500;
     }
 
-    /* Modal / Tool section */
-    .converter-bar {
-      background: var(--bg-panel);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1rem 1.25rem;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.25rem;
-    }
-
-    @media (max-width: 768px) {
-      .converter-bar {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .converter-col {
+    /* Reference & Converter Tab Content */
+    .tool-tab-content {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 16px;
+      background: var(--bg-surface);
     }
 
-    .converter-title {
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: var(--text);
+    .tool-card {
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      background: var(--bg-inset);
+      padding: 12px;
+    }
+
+    .tool-card-title {
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text-main);
+    }
+
+    .converter-row {
       display: flex;
       align-items: center;
-      gap: 0.4rem;
+      gap: 10px;
     }
 
-    .converter-inputs {
-      display: flex;
-      gap: 0.5rem;
-    }
-
-    .converter-inputs input {
+    .converter-row input {
       flex: 1;
       font-family: var(--font-mono);
-      font-size: 0.85rem;
     }
 
-    /* Footer */
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 1rem 1.5rem;
-      text-align: center;
-      font-size: 0.82rem;
-      color: var(--text-muted);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      background: var(--bg-dark);
-    }
-
-    footer a {
-      color: var(--accent);
-      text-decoration: none;
-    }
-
-    footer a:hover {
-      text-decoration: underline;
-    }
-
-    /* Status indicator */
-    .status-dot {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 8px var(--green);
-    }
-
-    .badge-67 {
-      background: #1b263b;
-      padding: 0.2rem 0.5rem;
-      border-radius: 6px;
+    .isa-table {
+      width: 100%;
+      border-collapse: collapse;
       font-family: var(--font-mono);
-      color: var(--yellow);
-      font-size: 0.8rem;
+      font-size: 11px;
+    }
+
+    .isa-table th, .isa-table td {
+      padding: 4px 8px;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: left;
+    }
+
+    .isa-table th {
+      color: var(--text-muted);
+      background: var(--bg-surface);
+    }
+
+    /* Bottom Status Bar */
+    footer {
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border-subtle);
+      height: 28px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-muted);
+      flex-shrink: 0;
+      user-select: none;
+    }
+
+    .status-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .state-indicator {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--text-dim);
+    }
+
+    .state-indicator.idle { background: var(--text-muted); }
+    .state-indicator.running { background: var(--accent); }
+    .state-indicator.done { background: var(--success); }
+    .state-indicator.error { background: var(--danger); }
+
+    .empty-state {
+      color: var(--text-dim);
+      font-style: italic;
+      padding: 6px 0;
     }
   </style>
 </head>
 <body>
 
-  <!-- Header -->
+  <!-- Top Navigation Shell -->
   <header>
-    <a href="#" class="logo-container">
-      <span class="logo-icon">🥣</span>
-      <span class="logo-title">Sopito++</span>
-      <span class="logo-badge">6=0 | 7=1</span>
-    </a>
+    <div class="brand">
+      <span class="brand-mark">6 = 0 &bull; 7 = 1</span>
+      <span class="brand-title">Sopito++ Workbench</span>
+      <span class="brand-tagline">Compilador C++ & Máquina Virtual</span>
+    </div>
     <div class="header-links">
-      <span class="badge-67">v1.0.0 Web</span>
-      <a href="https://github.com/wuiisito/sopito-" target="_blank" class="header-link">
-        <svg height="18" width="18" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      <a href="https://github.com/wuiisito/sopito-" target="_blank" rel="noopener noreferrer" class="header-link">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
         GitHub
       </a>
-      <a href="https://sopito.readthedocs.io/" target="_blank" class="header-link">📖 Documentación</a>
+      <a href="https://readthedocs.org" target="_blank" rel="noopener noreferrer" class="header-link">
+        Especificación ISA
+      </a>
     </div>
   </header>
 
-  <!-- Main App -->
-  <main>
-    <!-- Toolbar Controls -->
-    <div class="toolbar">
-      <div class="toolbar-group">
-        <label for="exampleSelect">📂 Ejemplo:</label>
-        <select id="exampleSelect">
-          <option value="01">🌟 01: Hola Mundo (Texto)</option>
-          <option value="02" selected>➕ 02: Suma de 6 + 7 = 13</option>
-          <option value="03">🔄 03: Bucle Contador (1 al 5)</option>
-          <option value="04">🌀 04: Serie de Fibonacci</option>
-          <option value="05">⚡ 05: Factorial con Subrutinas (CALL/RET)</option>
-        </select>
+  <!-- Controls Action Bar -->
+  <div class="controls-bar">
+    <div class="controls-group">
+      <label class="field-label" for="exampleSelect">Ejemplo:</label>
+      <select id="exampleSelect">
+        <option value="01">01: Hola Mundo (Texto)</option>
+        <option value="02" selected>02: Suma de 6 + 7 = 13</option>
+        <option value="03">03: Bucle Contador (1 al 5)</option>
+        <option value="04">04: Sucesión de Fibonacci</option>
+        <option value="05">05: Factorial con Subrutinas</option>
+      </select>
 
-        <label for="syntaxMode">Sintaxis:</label>
-        <select id="syntaxMode">
-          <option value="spp" selected>Binario Puro (.spp en 6/7)</option>
-          <option value="sasm">Mnemónicos (.sasm)</option>
-        </select>
-      </div>
-
-      <div class="toolbar-group">
-        <button id="btnAssemble" class="btn btn-secondary" title="Convertir entre .sasm y .spp">⇄ Ensamblar / Desensamblar</button>
-        <button id="btnCompile" class="btn btn-secondary" title="Generar código C++ nativo">⚙️ Compilar a C++</button>
-        <button id="btnRun" class="btn btn-primary" title="Ejecutar en la Máquina Virtual">▶ Ejecutar en VM</button>
-        <button id="btnClearTerm" class="btn btn-danger" title="Limpiar salida de consola">🗑 Limpiar</button>
-      </div>
+      <label class="field-label" for="syntaxMode">Modo:</label>
+      <select id="syntaxMode">
+        <option value="spp" selected>Sopito++ Binario (.spp)</option>
+        <option value="sasm">Ensamblador Mnemónico (.sasm)</option>
+      </select>
     </div>
 
-    <!-- Workspace split -->
-    <div class="workspace">
-      <!-- Left Panel: Code Editor -->
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-tabs">
-            <button class="tab-btn active" id="tabSource">Editor de Código</button>
-          </div>
-          <div class="panel-actions">
-            <span id="charCount" style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono);">0 caracteres</span>
-            <button id="btnDownloadSrc" class="icon-btn" title="Descargar código fuente">💾 Guardar</button>
-          </div>
+    <div class="controls-group">
+      <button id="btnAssemble" class="btn" title="Convertir entre .sasm y .spp">Ensamblar / Desensamblar</button>
+      <button id="btnCompile" class="btn" title="Traducir a C++ nativo">Compilar a C++</button>
+      <button id="btnRun" class="btn btn-primary" title="Ejecutar en la Máquina Virtual (Ctrl+Enter)">Ejecutar</button>
+      <button id="btnClearTerm" class="btn btn-danger" title="Limpiar salida de consola">Limpiar</button>
+    </div>
+  </div>
+
+  <!-- Main Split Layout -->
+  <main class="workbench">
+    <!-- Left Panel: Source Editor -->
+    <section class="panel">
+      <div class="panel-header">
+        <div class="panel-tabs">
+          <button class="tab-item active" id="tabEditor">Editor de Código</button>
         </div>
-        <div class="editor-wrapper">
-          <textarea id="editor" class="code-editor" spellcheck="false" placeholder="Escribe aquí tu código en 6s y 7s o ensamblador..."></textarea>
+        <div class="panel-tools">
+          <span id="statChars" style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); margin-right: 8px;">0 bits</span>
+          <button id="btnSaveSrc" class="tool-btn" title="Descargar archivo (Ctrl+S)">Guardar</button>
         </div>
       </div>
 
-      <!-- Right Panel: Output, C++ and VM Visualizer -->
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-tabs">
-            <button class="tab-btn active" id="tabTerminal">Consola / VM</button>
-            <button class="tab-btn" id="tabCpp">Código C++ Generado</button>
-          </div>
-          <div class="panel-actions">
-            <button id="btnCopyOutput" class="icon-btn" title="Copiar contenido">📋 Copiar</button>
-            <button id="btnDownloadCpp" class="icon-btn" title="Descargar archivo C++" style="display: none;">📥 Descargar .cpp</button>
-          </div>
+      <div class="editor-container">
+        <div class="editor-gutter" id="editorGutter">1</div>
+        <textarea id="editorTextarea" class="editor-textarea" spellcheck="false" placeholder="# Escribe instrucciones en 6 y 7 o mnemónicos..."></textarea>
+      </div>
+    </section>
+
+    <!-- Right Panel: Diagnostics, Terminal, and Output Views -->
+    <section class="panel">
+      <div class="panel-header">
+        <div class="panel-tabs">
+          <button class="tab-item active" id="tabTerminal">Consola / VM</button>
+          <button class="tab-item" id="tabCpp">C++ Generado</button>
+          <button class="tab-item" id="tabTools">Conversor & ISA</button>
+        </div>
+        <div class="panel-tools">
+          <button id="btnCopyRight" class="tool-btn">Copiar</button>
+          <button id="btnDownloadCpp" class="tool-btn" style="display: none;">Descargar .cpp</button>
+        </div>
+      </div>
+
+      <!-- View: Terminal Console -->
+      <div id="viewTerminal" class="view-wrapper">
+        <div id="terminalScreen" class="terminal-screen">
+          <div class="log-info">Máquina Virtual Sopito++ lista. Presiona "Ejecutar" o Ctrl+Enter.</div>
         </div>
 
-        <div class="output-container">
-          <!-- Terminal View -->
-          <div id="viewTerminal" class="terminal-container">
-            <div id="terminalOutput" class="terminal-output">
-              <span class="info">🥣 Máquina Virtual de Sopito++ lista.<br>Selecciona un ejemplo o escribe tu código y pulsa "▶ Ejecutar en VM".</span>
+        <!-- Integrated Stack & Memory Inspector -->
+        <div class="state-inspector">
+          <div class="inspector-column">
+            <div class="column-title">
+              <span>Pila de Datos LIFO</span>
+              <span id="stackCount">0 elementos</span>
+            </div>
+            <div class="column-body">
+              <div id="stackLane" class="stack-lane">
+                <div class="empty-state">Pila vacía. PUSH añadirá elementos aquí.</div>
+              </div>
             </div>
           </div>
 
-          <!-- C++ View -->
-          <div id="viewCpp" style="display: none; height: 100%; overflow: auto;">
-            <pre id="cppOutput" class="code-display">// Pulsa "⚙️ Compilar a C++" para ver la traducción en C++17...</pre>
-          </div>
-
-          <!-- Stack & Memory Inspector -->
-          <div class="inspector-grid" id="inspectorGrid">
-            <div class="inspector-box">
-              <div class="inspector-header">
-                <span>Pila LIFO (<span id="stackSize">0</span>)</span>
-                <span style="color: var(--accent);">Top</span>
-              </div>
-              <div class="stack-items" id="stackView">
-                <span style="color: var(--text-muted); font-size: 0.8rem; font-style: italic;">Pila vacía</span>
-              </div>
+          <div class="inspector-column">
+            <div class="column-title">
+              <span>Memoria de Variables</span>
+              <span>Dirección &rarr; Valor</span>
             </div>
-
-            <div class="inspector-box">
-              <div class="inspector-header">
-                <span>Memoria de Variables</span>
-                <span>ID -> Valor</span>
-              </div>
-              <div style="overflow-y: auto; max-height: 100px;">
-                <table class="memory-table">
-                  <thead>
-                    <tr><th>ID</th><th>Valor</th></tr>
-                  </thead>
-                  <tbody id="memoryView">
-                    <tr><td colspan="2" style="color: var(--text-muted); font-style: italic;">Sin variables</td></tr>
-                  </tbody>
-                </table>
-              </div>
+            <div class="column-body">
+              <table class="data-table">
+                <thead>
+                  <tr><th>Dirección</th><th>Valor (Decimal)</th><th>Valor (6/7)</th></tr>
+                </thead>
+                <tbody id="memoryBody">
+                  <tr><td colspan="3" class="empty-state">Sin variables asignadas (STORE/LOAD).</td></tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Quick Converter Bar -->
-    <div class="converter-bar">
-      <!-- Decimal to Sopito -->
-      <div class="converter-col">
-        <div class="converter-title">
-          <span>🔢 Conversor Numérico (6 es 0, 7 es 1)</span>
-        </div>
-        <div class="converter-inputs">
-          <input type="number" id="inputDecimal" placeholder="Decimal (ej: 42)" value="42">
-          <span style="display: flex; align-items: center; color: var(--text-muted);">➜</span>
-          <input type="text" id="outputSopitoNum" readonly placeholder="Sopito++ (767676)">
-        </div>
+      <!-- View: C++ Code -->
+      <div id="viewCpp" class="view-wrapper" style="display: none;">
+        <pre id="cppCodeDisplay" class="code-view">// Presiona "Compilar a C++" para generar código C++17 nativo...</pre>
       </div>
 
-      <!-- Text to Sopito Bytes -->
-      <div class="converter-col">
-        <div class="converter-title">
-          <span>🔤 Conversor de Texto a Bytes 6/7</span>
-        </div>
-        <div class="converter-inputs">
-          <input type="text" id="inputText" placeholder="Texto (ej: Hola)" value="Hola">
-          <span style="display: flex; align-items: center; color: var(--text-muted);">➜</span>
-          <input type="text" id="outputSopitoBytes" readonly placeholder="Bytes en 6/7">
+      <!-- View: Tool & Reference -->
+      <div id="viewTools" class="view-wrapper" style="display: none;">
+        <div class="tool-tab-content">
+          <!-- Numeric Converter -->
+          <div class="tool-card">
+            <div class="tool-card-title">Conversión Numérica Bidireccional (6 es bit 0, 7 es bit 1)</div>
+            <div class="converter-row">
+              <input type="number" id="numDec" value="42" placeholder="Decimal (ej: 42)">
+              <span style="color: var(--text-dim);">&harr;</span>
+              <input type="text" id="numSop" value="767676" placeholder="Sopito++ (ej: 767676)">
+            </div>
+          </div>
+
+          <!-- Text Converter -->
+          <div class="tool-card">
+            <div class="tool-card-title">Conversión de Texto ASCII / UTF-8 a Bytes 6/7</div>
+            <div class="converter-row">
+              <input type="text" id="rawText" value="Hola" placeholder="Texto (ej: Hola)">
+              <span style="color: var(--text-dim);">&rarr;</span>
+              <input type="text" id="sopBytes" readonly placeholder="Bytes de 8 bits">
+            </div>
+          </div>
+
+          <!-- ISA Quick Reference -->
+          <div class="tool-card" style="padding: 0; overflow: hidden;">
+            <div style="padding: 10px 12px; border-bottom: 1px solid var(--border-subtle); font-weight: 600;">
+              Tabla Resumen de Opcodes (5 bits)
+            </div>
+            <div style="max-height: 240px; overflow-y: auto;">
+              <table class="isa-table">
+                <thead>
+                  <tr><th>Opcode</th><th>Mnemónico</th><th>Operación</th></tr>
+                </thead>
+                <tbody id="isaTableBody"></tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
   </main>
 
-  <!-- Footer -->
+  <!-- Bottom Technical Status Bar -->
   <footer>
-    <div>
-      <span class="status-dot"></span> <b>Sopito++ Web Compiler</b> &bull; Creado con amor por la comunidad.
+    <div class="status-item">
+      <span class="state-indicator idle" id="engineStatusDot"></span>
+      <span id="engineStatusText">Listo</span>
     </div>
-    <div>
-      Alojado en <a href="https://wuiisito.github.io/sopito-plus-plus/" target="_blank">wuiisito.github.io/sopito-</a> &bull;
-      Regla Sagrada: <code>6 = 0</code> y <code>7 = 1</code>
+    <div class="status-item" id="statsDetail">
+      0 caracteres &bull; 0 ceros (6) &bull; 0 unos (7)
+    </div>
+    <div class="status-item" style="color: var(--text-dim);">
+      Ctrl+Enter: Ejecutar &bull; Tab: 4 espacios
     </div>
   </footer>
 
-  <!-- Sopito++ Runtime Engine -->
   <script>
-    // --- Tabla Oficial de Opcodes (ISA) ---
+    // --- Tabla Oficial de Instrucciones ISA (5 bits) ---
     const OPCODE_TABLE = {
       0:  { mnemonic: "HALT",       sopito: "66666", args: 0, desc: "Termina la ejecución" },
       1:  { mnemonic: "PUSH",       sopito: "66667", args: 1, desc: "Empuja un entero a la pila" },
@@ -765,7 +785,7 @@
       SOPITO_TO_OP[info.sopito] = Number(op);
     }
 
-    // --- Funciones de Conversión Numérica y de Texto ---
+    // --- Conversión Matemática y Binaria ---
     function sopitoToBin(s) {
       return s.replace(/[^67]/g, '').replace(/6/g, '0').replace(/7/g, '1');
     }
@@ -776,8 +796,7 @@
 
     function sopitoToInt(s) {
       const b = sopitoToBin(s);
-      if (!b) return 0n;
-      return BigInt('0b' + b);
+      return b ? BigInt('0b' + b) : 0n;
     }
 
     function intToSopito(n, minBits = 1) {
@@ -787,12 +806,10 @@
     }
 
     function textToSopitoBytes(text) {
-      const encoder = new TextEncoder();
-      const raw = encoder.encode(text);
+      const raw = new TextEncoder().encode(text);
       const res = [];
       for (const byte of raw) {
-        const bStr = byte.toString(2).padStart(8, '0');
-        res.push(binToSopito(bStr));
+        res.push(binToSopito(byte.toString(2).padStart(8, '0')));
       }
       return res;
     }
@@ -805,24 +822,38 @@
       return new TextDecoder().decode(u8);
     }
 
-    // --- Parser de Código Fuente (.spp) ---
+    // --- Detección Robusta de Lenguaje (.spp vs .sasm) ---
+    function detectLanguage(text) {
+      const lines = text.split('\n');
+      for (let rawLine of lines) {
+        let clean = rawLine.trim();
+        if (!clean || clean.startsWith('#') || clean.startsWith(';') || clean.startsWith('//')) continue;
+        const commentIdx = clean.search(/[#;]|\/\//);
+        if (commentIdx !== -1) clean = clean.substring(0, commentIdx).trim();
+        if (!clean) continue;
+        const token = clean.split(/\s+/)[0];
+        if (/^[67]+$/.test(token)) return "spp";
+        if (/^[A-Za-z_]+$/.test(token)) return "sasm";
+      }
+      return document.getElementById("syntaxMode").value || "spp";
+    }
+
+    // --- Parsers ---
     function parseSpp(code) {
       const tokens = [];
       const lines = code.split('\n');
 
       for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
         let line = lines[lineIdx];
-        // Quitar comentarios (#, //, ;)
         let clean = "";
         for (let i = 0; i < line.length; i++) {
           if (line[i] === '#' || line[i] === ';' || (line[i] === '/' && line[i+1] === '/')) break;
           clean += line[i];
         }
-
         const words = clean.trim().split(/\s+/).filter(Boolean);
         for (const w of words) {
           if (!/^[67]+$/.test(w)) {
-            throw new Error(`[Línea ${lineIdx + 1}] Token inválido '${w}'. En Sopito++ sólo se permiten los dígitos 6 (0) y 7 (1).`);
+            throw new Error(`Línea ${lineIdx + 1}: Carácter inválido '${w}'. En Sopito++ sólo se permiten dígitos 6 (0) y 7 (1).`);
           }
           tokens.push({ text: w, line: lineIdx + 1 });
         }
@@ -833,10 +864,10 @@
       while (idx < tokens.length) {
         const tok = tokens[idx++];
         if (tok.text.length !== 5) {
-          throw new Error(`[Línea ${tok.line}] Opcode inválido '${tok.text}'. Cada opcode debe tener exactamente 5 dígitos de 6s y 7s.`);
+          throw new Error(`Línea ${tok.line}: Opcode inválido '${tok.text}'. Todo opcode debe tener exactamente 5 dígitos en 6/7.`);
         }
         if (!(tok.text in SOPITO_TO_OP)) {
-          throw new Error(`[Línea ${tok.line}] Opcode desconocido '${tok.text}'.`);
+          throw new Error(`Línea ${tok.line}: Opcode desconocido '${tok.text}'.`);
         }
 
         const op = SOPITO_TO_OP[tok.text];
@@ -845,17 +876,17 @@
         if (info.args === 0) {
           instructions.push({ op, args: [], line: tok.line, raw: tok.text });
         } else if (info.args === 1) {
-          if (idx >= tokens.length) throw new Error(`[Línea ${tok.line}] ${info.mnemonic} requiere 1 argumento.`);
+          if (idx >= tokens.length) throw new Error(`Línea ${tok.line}: La instrucción ${info.mnemonic} requiere 1 argumento.`);
           const argTok = tokens[idx++];
           const val = sopitoToInt(argTok.text);
           instructions.push({ op, args: [val], line: tok.line, raw: `${tok.text} ${argTok.text}` });
         } else if (info.args === -1) {
-          if (idx >= tokens.length) throw new Error(`[Línea ${tok.line}] PRINT_STR requiere longitud de cadena.`);
+          if (idx >= tokens.length) throw new Error(`Línea ${tok.line}: PRINT_STR requiere longitud.`);
           const lenTok = tokens[idx++];
           const len = Number(sopitoToInt(lenTok.text));
           const bytes = [];
           for (let i = 0; i < len; i++) {
-            if (idx >= tokens.length) throw new Error(`[Línea ${tok.line}] PRINT_STR esperaba ${len} bytes.`);
+            if (idx >= tokens.length) throw new Error(`Línea ${tok.line}: PRINT_STR esperaba ${len} bytes.`);
             bytes.push(tokens[idx++].text);
           }
           const text = sopitoBytesToText(bytes);
@@ -865,7 +896,6 @@
       return instructions;
     }
 
-    // --- Parser de Código Ensamblador (.sasm) ---
     function parseSasm(code) {
       const lines = code.split('\n');
       const instructions = [];
@@ -874,7 +904,6 @@
         let line = lines[lineIdx].trim();
         if (!line || line.startsWith('#') || line.startsWith(';') || line.startsWith('//')) continue;
 
-        // Quitar comentarios
         let clean = "";
         let inQuotes = false;
         for (let i = 0; i < line.length; i++) {
@@ -887,21 +916,21 @@
 
         const match = clean.match(/^([A-Z_]+)(?:\s+(.*))?$/i);
         if (!match) {
-          throw new Error(`[Línea ${lineIdx + 1}] Comando no válido en ensamblador: '${clean}'. Si es código en 6/7, selecciona sintaxis .spp.`);
+          throw new Error(`Línea ${lineIdx + 1}: Sintaxis inválida '${clean}'.`);
         }
         const mnemonic = match[1].toUpperCase();
         const argStr = match[2] ? match[2].trim() : "";
 
         if (mnemonic === "PUSH_STR") {
           const strMatch = argStr.match(/^"((?:[^"\\]|\\.)*)"$/);
-          if (!strMatch) throw new Error(`[Línea ${lineIdx + 1}] PUSH_STR requiere cadena entre comillas.`);
+          if (!strMatch) throw new Error(`Línea ${lineIdx + 1}: PUSH_STR requiere una cadena entre comillas.`);
           const text = JSON.parse(`"${strMatch[1]}"`);
           instructions.push({ op: MNEMONIC_TO_OP["PRINT_STR"], args: [text], line: lineIdx + 1 });
           continue;
         }
 
         if (!(mnemonic in MNEMONIC_TO_OP)) {
-          throw new Error(`[Línea ${lineIdx + 1}] Mnemónico desconocido '${mnemonic}'.`);
+          throw new Error(`Línea ${lineIdx + 1}: Mnemónico desconocido '${mnemonic}'.`);
         }
 
         const op = MNEMONIC_TO_OP[mnemonic];
@@ -910,26 +939,19 @@
         if (info.args === 0) {
           instructions.push({ op, args: [], line: lineIdx + 1 });
         } else if (info.args === 1) {
-          let val;
-          if (/^[67]+$/.test(argStr)) {
-            val = sopitoToInt(argStr);
-          } else {
-            val = BigInt(argStr);
-          }
+          let val = /^[67]+$/.test(argStr) ? sopitoToInt(argStr) : BigInt(argStr);
           instructions.push({ op, args: [val], line: lineIdx + 1 });
         }
       }
       return instructions;
     }
 
-    // --- Ensamblador (.sasm -> .spp) ---
     function assembleToSpp(instructions) {
       const out = [
         "# ===========================================",
-        "# Código Ensamblado en Sopito++ (6=0, 7=1)",
+        "# Código Ensamblado Sopito++ (6=0, 7=1)",
         "# ===========================================\n"
       ];
-
       for (const inst of instructions) {
         const info = OPCODE_TABLE[inst.op];
         if (info.args === 0) {
@@ -947,28 +969,24 @@
       return out.join('\n');
     }
 
-    // --- Desensamblador (.spp -> .sasm) ---
     function disassembleToSasm(instructions) {
-      const out = ["# --- Desensamblado de Sopito++ ---"];
+      const out = ["# --- Desensamblado Sopito++ ---"];
       for (const inst of instructions) {
         const info = OPCODE_TABLE[inst.op];
-        if (info.args === 0) {
-          out.push(`${info.mnemonic.padEnd(12)} # [${info.sopito}]`);
-        } else if (info.args === 1) {
-          out.push(`${info.mnemonic.padEnd(10)} ${inst.args[0]}`);
-        } else if (info.args === -1) {
-          out.push(`PUSH_STR ${JSON.stringify(inst.args[0])}`);
-        }
+        if (info.args === 0) out.push(`${info.mnemonic.padEnd(12)} # [${info.sopito}]`);
+        else if (info.args === 1) out.push(`${info.mnemonic.padEnd(10)} ${inst.args[0]}`);
+        else if (info.args === -1) out.push(`PUSH_STR ${JSON.stringify(inst.args[0])}`);
       }
       return out.join('\n');
     }
 
-    // --- Compilador Oficial a C++ Moderno ---
+    // --- Compilador Oficial a C++17 ---
     function compileToCpp(instructions) {
       const lines = [
         "// ===========================================================================",
-        "// Generado automáticamente por Sopito++ Web Compiler",
+        "// Generado por Sopito++ Web Compiler",
         "// Dialecto: Sopito++ (6 = bit 0, 7 = bit 1)",
+        "// Compilable con: g++ -O2 archivo.cpp -o programa.exe",
         "// ===========================================================================",
         "#include <iostream>",
         "#include <vector>",
@@ -977,14 +995,14 @@
         "#include <string>",
         "",
         "int main() {",
-        "    // Pila de datos principal (enteros de 64 bits)",
+        "    // Pila LIFO de datos (enteros de 64 bits con signo)",
         "    std::vector<int64_t> stack;",
         "    stack.reserve(1024);",
         "",
-        "    // Memoria direccionable de variables",
+        "    // Espacio de celdas de memoria / variables",
         "    std::unordered_map<int64_t, int64_t> memory;",
         "",
-        "    // Pila de llamadas para subrutinas",
+        "    // Pila de llamadas a subrutinas (CALL/RET)",
         "    std::vector<int> call_stack;",
         "    call_stack.reserve(64);",
         "",
@@ -1088,7 +1106,7 @@
       }
 
       run() {
-        let maxSteps = 100000;
+        const maxSteps = 100000;
         let steps = 0;
 
         while (this.ip < this.instructions.length && steps < maxSteps) {
@@ -1198,13 +1216,13 @@
           } else if (m === "JMP") {
             const lbl = inst.args[0].toString();
             if (lbl in this.labels) this.ip = this.labels[lbl] + 1;
-            else throw new Error(`Etiqueta no encontrada: ${lbl}`);
+            else throw new Error(`Etiqueta de salto no encontrada: ${lbl}`);
           } else if (m === "JZ") {
             const cond = this.stack.pop() || 0n;
             const lbl = inst.args[0].toString();
             if (cond === 0n) {
               if (lbl in this.labels) this.ip = this.labels[lbl] + 1;
-              else throw new Error(`Etiqueta no encontrada: ${lbl}`);
+              else throw new Error(`Etiqueta de salto no encontrada: ${lbl}`);
             } else {
               this.ip++;
             }
@@ -1213,7 +1231,7 @@
             const lbl = inst.args[0].toString();
             if (cond !== 0n) {
               if (lbl in this.labels) this.ip = this.labels[lbl] + 1;
-              else throw new Error(`Etiqueta no encontrada: ${lbl}`);
+              else throw new Error(`Etiqueta de salto no encontrada: ${lbl}`);
             } else {
               this.ip++;
             }
@@ -1254,24 +1272,24 @@
         }
 
         if (steps >= maxSteps) {
-          this.onOutput("\n[ADVERTENCIA: Límite de 100,000 pasos alcanzado para evitar bucles infinitos]\n");
+          this.onOutput("\n[Aviso: Límite de 100,000 pasos alcanzado para prevenir bloqueos]\n");
         }
         this.onStateUpdate(this.stack, this.memory);
       }
     }
 
-    // --- Ejemplos Integrados ---
+    // --- Catálogo de Ejemplos ---
     const EXAMPLES = {
       "01": {
-        sasm: `# Ejemplo 01: Hola Mundo\nPUSH_STR "¡Hola desde Sopito++! (Donde 6 es 0 y 7 es 1)\\n"\nHALT`,
-        spp: `# Ejemplo 01: Hola Mundo en Puro 6 y 7\n77676 767777 77666676 76766667 67667666 67767777 67767766 67766667 66766666 67766766 67766767 67776677 67766766 67766767 66766666 67676677 67767777 67776666 67767667 67776766 67767777 66767677 66767677 66766667 66766666 66767666 67666766 67767777 67767776 67766766 67766767 66766666 66776776 66766666 67766767 67776677 66766666 66776666 66766666 67777667 66766666 66776777 66766666 67766767 67776677 66766666 66776667 66767667 66667676\n66666`
+        sasm: `# Ejemplo 01: Hola Mundo\nPUSH_STR "Hola desde Sopito++ (6=0, 7=1)\\n"\nHALT`,
+        spp: `# Ejemplo 01: Hola Mundo en 6 y 7\n77676 767766 67667666 67767777 67767766 67766667 66766666 67766766 67766767 67776677 67766766 67766767 66766666 67676677 67767777 67776666 67767667 67776766 67767777 66767677 66767677 66766666 66767666 66776776 66776777 66766666 66776777 66776777 66767667 66667676\n66666`
       },
       "02": {
-        sasm: `# Ejemplo 02: Suma 6 + 7\nPUSH_STR "Calculando 6 + 7 en Sopito++...\\n"\nPUSH_STR "Resultado: "\nPUSH 6\nPUSH 7\nADD\nPRINT_NUM\nPRINT_NL\nHALT`,
-        spp: `# Ejemplo 02: Suma en Puro 6 y 7\n77676 766666 67666677 67766667 67767766 67766677 67776767 67767766 67766667 67767776 67766766 67767777 66766666 66776776 66766666 66767677 66766666 66776777 66766666 67766767 67767776 66766666 67676677 67767777 67776666 67767667 67776766 67767777 66767677 66767677 66767776 66767776 66767776 66667676\n77676 7677 67676676 67766767 67776677 67776767 67767766 67776766 67766667 67766766 67767777 66777676 66766666\n66667 776          # PUSH 6\n66667 777          # PUSH 7\n66776              # ADD\n77666              # PRINT_NUM\n77677              # PRINT_NL\n66666              # HALT`
+        sasm: `# Ejemplo 02: Suma de 6 + 7\nPUSH_STR "Calculando 6 + 7 en Sopito++...\\n"\nPUSH_STR "Resultado: "\nPUSH 6\nPUSH 7\nADD\nPRINT_NUM\nPRINT_NL\nHALT`,
+        spp: `# Ejemplo 02: Suma en Puro 6 y 7\n77676 766666 67666677 67766667 67767766 67766677 67776767 67767766 67766667 67767776 67766766 67767777 66766666 66776776 66766666 66767677 66766666 66776777 66766666 67766767 67767776 66766666 67676677 67767777 67776666 67767667 67776766 67767777 66767677 66767677 66767776 66767776 66767776 66667676\n77676 7677 67676676 67766767 67776677 67776767 67767766 67776766 67766667 67766766 67767777 66777676 66766666\n66667 776          # PUSH 6 (110)\n66667 777          # PUSH 7 (111)\n66776              # ADD\n77666              # PRINT_NUM\n77677              # PRINT_NL\n66666              # HALT`
       },
       "03": {
-        sasm: `# Ejemplo 03: Bucle Contador 1 al 5\nPUSH_STR "Contando del 1 al 5:\\n"\nPUSH 1\nSTORE 0\nLABEL 1\nLOAD 0\nPRINT_NUM\nPRINT_NL\nLOAD 0\nPUSH 1\nADD\nSTORE 0\nLOAD 0\nPUSH 5\nGT\nJZ 1\nPUSH_STR "¡Completado!\\n"\nHALT`,
+        sasm: `# Ejemplo 03: Contador 1 al 5\nPUSH_STR "Contando del 1 al 5:\\n"\nPUSH 1\nSTORE 0\nLABEL 1\nLOAD 0\nPRINT_NUM\nPRINT_NL\nLOAD 0\nPUSH 1\nADD\nSTORE 0\nLOAD 0\nPUSH 5\nGT\nJZ 1\nPUSH_STR "Completado\\n"\nHALT`,
         spp: `# Ejemplo 03: Contador en Puro 6 y 7\n66667 7\n76776 6\n76676 7\n76777 6\n77666\n77677\n76777 6\n66667 7\n66776\n76776 6\n76777 6\n66667 767\n67776\n76766 7\n66666`
       },
       "04": {
@@ -1284,107 +1302,155 @@
       }
     };
 
-    // --- UI Logic & Event Handlers ---
-    const editor = document.getElementById("editor");
-    const charCount = document.getElementById("charCount");
+    // --- Elementos de Interfaz ---
+    const editor = document.getElementById("editorTextarea");
+    const gutter = document.getElementById("editorGutter");
     const exampleSelect = document.getElementById("exampleSelect");
     const syntaxMode = document.getElementById("syntaxMode");
     const btnAssemble = document.getElementById("btnAssemble");
     const btnCompile = document.getElementById("btnCompile");
     const btnRun = document.getElementById("btnRun");
     const btnClearTerm = document.getElementById("btnClearTerm");
-    const terminalOutput = document.getElementById("terminalOutput");
-    const cppOutput = document.getElementById("cppOutput");
+    const terminalScreen = document.getElementById("terminalScreen");
+    const cppCodeDisplay = document.getElementById("cppCodeDisplay");
+
     const tabTerminal = document.getElementById("tabTerminal");
     const tabCpp = document.getElementById("tabCpp");
+    const tabTools = document.getElementById("tabTools");
     const viewTerminal = document.getElementById("viewTerminal");
     const viewCpp = document.getElementById("viewCpp");
-    const stackView = document.getElementById("stackView");
-    const stackSize = document.getElementById("stackSize");
-    const memoryView = document.getElementById("memoryView");
-    const btnCopyOutput = document.getElementById("btnCopyOutput");
-    const btnDownloadSrc = document.getElementById("btnDownloadSrc");
+    const viewTools = document.getElementById("viewTools");
+
+    const stackLane = document.getElementById("stackLane");
+    const stackCount = document.getElementById("stackCount");
+    const memoryBody = document.getElementById("memoryBody");
+
+    const btnCopyRight = document.getElementById("btnCopyRight");
     const btnDownloadCpp = document.getElementById("btnDownloadCpp");
+    const btnSaveSrc = document.getElementById("btnSaveSrc");
 
-    // Converter elements
-    const inputDecimal = document.getElementById("inputDecimal");
-    const outputSopitoNum = document.getElementById("outputSopitoNum");
-    const inputText = document.getElementById("inputText");
-    const outputSopitoBytes = document.getElementById("outputSopitoBytes");
+    const statChars = document.getElementById("statChars");
+    const statsDetail = document.getElementById("statsDetail");
+    const engineStatusDot = document.getElementById("engineStatusDot");
+    const engineStatusText = document.getElementById("engineStatusText");
 
-    // Load initial example
-    function loadExample() {
-      const exKey = exampleSelect.value;
+    // Converter inputs
+    const numDec = document.getElementById("numDec");
+    const numSop = document.getElementById("numSop");
+    const rawText = document.getElementById("rawText");
+    const sopBytes = document.getElementById("sopBytes");
+    const isaTableBody = document.getElementById("isaTableBody");
+
+    // Populate ISA table
+    for (const [code, info] of Object.entries(OPCODE_TABLE)) {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td><code style="color: var(--accent);">${info.sopito}</code></td><td><b>${info.mnemonic}</b></td><td>${info.desc}</td>`;
+      isaTableBody.appendChild(tr);
+    }
+
+    // Line numbers gutter update
+    function updateGutter() {
+      const lines = editor.value.split('\n').length;
+      let gutterText = "";
+      for (let i = 1; i <= lines; i++) {
+        gutterText += i + '\n';
+      }
+      gutter.textContent = gutterText;
+      updateStats();
+    }
+
+    function updateStats() {
+      const val = editor.value;
+      const total = val.length;
+      const count6 = (val.match(/6/g) || []).length;
+      const count7 = (val.match(/7/g) || []).length;
+      statChars.textContent = `${count6 + count7} bits 6/7`;
+      statsDetail.textContent = `${total} caracteres • ${count6} ceros (6) • ${count7} unos (7)`;
+    }
+
+    // Tab key in editor
+    editor.addEventListener("keydown", (e) => {
+      if (e.key === "Tab") {
+        e.preventDefault();
+        const start = editor.selectionStart;
+        const end = editor.selectionEnd;
+        editor.value = editor.value.substring(0, start) + "    " + editor.value.substring(end);
+        editor.selectionStart = editor.selectionEnd = start + 4;
+        updateGutter();
+      } else if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        btnRun.click();
+      } else if (e.key === "s" && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        btnSaveSrc.click();
+      }
+    });
+
+    editor.addEventListener("input", updateGutter);
+    editor.addEventListener("scroll", () => {
+      gutter.scrollTop = editor.scrollTop;
+    });
+
+    // Load example
+    function loadSelectedExample() {
+      const ex = exampleSelect.value;
       const mode = syntaxMode.value;
-      editor.value = EXAMPLES[exKey][mode];
-      updateCharCount();
+      editor.value = EXAMPLES[ex][mode];
+      updateGutter();
     }
 
-    function updateCharCount() {
-      const len = editor.value.length;
-      const sixSeven = (editor.value.match(/[67]/g) || []).length;
-      charCount.textContent = `${len} caracteres (${sixSeven} bits 6/7)`;
-    }
-
-    editor.addEventListener("input", updateCharCount);
-    exampleSelect.addEventListener("change", loadExample);
-    syntaxMode.addEventListener("change", loadExample);
+    exampleSelect.addEventListener("change", loadSelectedExample);
+    syntaxMode.addEventListener("change", loadSelectedExample);
 
     // Tab switching
-    tabTerminal.addEventListener("click", () => {
-      tabTerminal.classList.add("active");
-      tabCpp.classList.remove("active");
-      viewTerminal.style.display = "flex";
-      viewCpp.style.display = "none";
-      btnDownloadCpp.style.display = "none";
-    });
+    function setActiveTab(activeTab, activeView) {
+      [tabTerminal, tabCpp, tabTools].forEach(t => t.classList.remove("active"));
+      [viewTerminal, viewCpp, viewTools].forEach(v => v.style.display = "none");
+      activeTab.classList.add("active");
+      activeView.style.display = activeView === viewTools ? "block" : "flex";
 
-    tabCpp.addEventListener("click", () => {
-      tabCpp.classList.add("active");
-      tabTerminal.classList.remove("active");
-      viewTerminal.style.display = "none";
-      viewCpp.style.display = "block";
-      btnDownloadCpp.style.display = "inline-flex";
-    });
-
-    // Detectar si el código en el editor es .spp (6 y 7) o .sasm (mnemónicos)
-    function detectLanguage(text) {
-      const lines = text.split('\n');
-      for (let rawLine of lines) {
-        let clean = rawLine.trim();
-        if (!clean || clean.startsWith('#') || clean.startsWith(';') || clean.startsWith('//')) continue;
-        const commentIdx = clean.search(/[#;]|\/\//);
-        if (commentIdx !== -1) clean = clean.substring(0, commentIdx).trim();
-        if (!clean) continue;
-        const token = clean.split(/\s+/)[0];
-        if (/^[67]+$/.test(token)) return "spp";
-        if (/^[A-Za-z_]+$/.test(token)) return "sasm";
-      }
-      return syntaxMode.value || "spp";
+      btnDownloadCpp.style.display = activeTab === tabCpp ? "inline-flex" : "none";
     }
 
-    // Assemble / Disassemble toggle
-    btnAssemble.addEventListener("click", () => {
+    tabTerminal.addEventListener("click", () => setActiveTab(tabTerminal, viewTerminal));
+    tabCpp.addEventListener("click", () => setActiveTab(tabCpp, viewCpp));
+    tabTools.addEventListener("click", () => setActiveTab(tabTools, viewTools));
+
+    // Status management
+    function setEngineStatus(state, message) {
+      engineStatusDot.className = `state-indicator ${state}`;
+      engineStatusText.textContent = message;
+    }
+
+    // Run VM
+    btnRun.addEventListener("click", () => {
+      setActiveTab(tabTerminal, viewTerminal);
+      setEngineStatus("running", "Ejecutando...");
+      terminalScreen.innerHTML += `\n<div class="log-info">&gt; Ejecutando programa (${new Date().toLocaleTimeString()})...</div>`;
+
       try {
         const text = editor.value.trim();
         const lang = detectLanguage(text);
-        if (lang === "spp") {
-          // Es .spp -> Desensamblar a .sasm
-          const insts = parseSpp(text);
-          editor.value = disassembleToSasm(insts);
-          syntaxMode.value = "sasm";
-          logToTerminal("[Info] Código desensamblado con éxito a mnemónicos (.sasm)\n", "info");
-        } else {
-          // Es .sasm -> Ensamblar a .spp
-          const insts = parseSasm(text);
-          editor.value = assembleToSpp(insts);
-          syntaxMode.value = "spp";
-          logToTerminal("[Info] Código ensamblado con éxito a binario 6/7 (.spp)\n", "info");
-        }
-        updateCharCount();
+        const insts = lang === "spp" ? parseSpp(text) : parseSasm(text);
+
+        const vm = new WebVM(insts, (outText) => {
+          const span = document.createElement("span");
+          span.className = "log-output";
+          span.textContent = outText;
+          terminalScreen.appendChild(span);
+          terminalScreen.scrollTop = terminalScreen.scrollHeight;
+        }, (stack, memory) => {
+          renderState(stack, memory);
+        });
+
+        vm.run();
+        setEngineStatus("done", "Finalizado (código 0)");
+        terminalScreen.innerHTML += `<div class="log-success">&gt; Ejecución completada exitosamente.</div>\n`;
       } catch (err) {
-        logToTerminal(`[Error] ${err.message}\n`, "error");
+        setEngineStatus("error", "Error de ejecución");
+        terminalScreen.innerHTML += `<div class="log-error">&gt; Error: ${err.message}</div>\n`;
       }
+      terminalScreen.scrollTop = terminalScreen.scrollHeight;
     });
 
     // Compile to C++
@@ -1392,123 +1458,116 @@
       try {
         const text = editor.value.trim();
         const lang = detectLanguage(text);
-        let insts;
-        if (lang === "spp") {
-          insts = parseSpp(text);
-        } else {
-          insts = parseSasm(text);
-        }
-
-        const cppCode = compileToCpp(insts);
-        cppOutput.textContent = cppCode;
-        tabCpp.click();
-        logToTerminal("[Info] Código compilado exitosamente a C++ estándar.\n", "info");
+        const insts = lang === "spp" ? parseSpp(text) : parseSasm(text);
+        const cppSource = compileToCpp(insts);
+        cppCodeDisplay.textContent = cppSource;
+        setActiveTab(tabCpp, viewCpp);
+        setEngineStatus("done", "C++ generado");
       } catch (err) {
-        logToTerminal(`[Error de Compilación] ${err.message}\n`, "error");
-        tabTerminal.click();
+        setEngineStatus("error", "Error de compilación");
+        setActiveTab(tabTerminal, viewTerminal);
+        terminalScreen.innerHTML += `<div class="log-error">&gt; Error de compilación: ${err.message}</div>\n`;
       }
     });
 
-    // Run in VM
-    btnRun.addEventListener("click", () => {
+    // Assemble / Disassemble
+    btnAssemble.addEventListener("click", () => {
       try {
-        tabTerminal.click();
-        logToTerminal("\n--- Ejecutando Programa en VM Sopito++ ---\n", "info");
-
         const text = editor.value.trim();
         const lang = detectLanguage(text);
-        let insts;
         if (lang === "spp") {
-          insts = parseSpp(text);
+          const insts = parseSpp(text);
+          editor.value = disassembleToSasm(insts);
+          syntaxMode.value = "sasm";
+          setEngineStatus("done", "Desensamblado a .sasm");
         } else {
-          insts = parseSasm(text);
+          const insts = parseSasm(text);
+          editor.value = assembleToSpp(insts);
+          syntaxMode.value = "spp";
+          setEngineStatus("done", "Ensamblado a .spp");
         }
-
-        const vm = new WebVM(insts, (out) => {
-          logToTerminal(out);
-        }, (stack, memory) => {
-          renderInspector(stack, memory);
-        });
-
-        vm.run();
-        logToTerminal("\n[Programa finalizado con código de salida 0]\n", "info");
+        updateGutter();
       } catch (err) {
-        logToTerminal(`\n[Error de Ejecución] ${err.message}\n`, "error");
+        setEngineStatus("error", "Error al procesar");
+        setActiveTab(tabTerminal, viewTerminal);
+        terminalScreen.innerHTML += `<div class="log-error">&gt; Error: ${err.message}</div>\n`;
       }
     });
 
-    function logToTerminal(text, type = "normal") {
-      const span = document.createElement("span");
-      span.className = type;
-      span.textContent = text;
-      terminalOutput.appendChild(span);
-      viewTerminal.scrollTop = viewTerminal.scrollHeight;
-    }
-
+    // Clear Terminal
     btnClearTerm.addEventListener("click", () => {
-      terminalOutput.innerHTML = '<span class="info">Consola reiniciada.</span>\n';
-      renderInspector([], {});
+      terminalScreen.innerHTML = '<div class="log-info">Consola reiniciada.</div>';
+      renderState([], {});
+      setEngineStatus("idle", "Listo");
     });
 
-    function renderInspector(stack, memory) {
-      stackSize.textContent = stack.length;
+    // State Render
+    function renderState(stack, memory) {
+      stackCount.textContent = `${stack.length} elemento${stack.length === 1 ? '' : 's'}`;
       if (stack.length === 0) {
-        stackView.innerHTML = '<span style="color: var(--text-muted); font-size: 0.8rem; font-style: italic;">Pila vacía</span>';
+        stackLane.innerHTML = '<div class="empty-state">Pila vacía. PUSH añadirá elementos aquí.</div>';
       } else {
-        stackView.innerHTML = "";
-        stack.forEach((val, idx) => {
-          const chip = document.createElement("div");
-          chip.className = "stack-chip";
-          chip.textContent = `${val}`;
-          chip.title = `Índice: ${idx}`;
-          stackView.appendChild(chip);
+        stackLane.innerHTML = "";
+        stack.forEach((val, i) => {
+          const cell = document.createElement("div");
+          cell.className = `stack-cell ${i === stack.length - 1 ? 'top-cell' : ''}`;
+          cell.innerHTML = `<span class="cell-idx">[${i}]</span><span class="cell-val">${val}</span>`;
+          stackLane.appendChild(cell);
         });
       }
 
-      const memKeys = Object.keys(memory);
-      if (memKeys.length === 0) {
-        memoryView.innerHTML = '<tr><td colspan="2" style="color: var(--text-muted); font-style: italic;">Sin variables</td></tr>';
+      const keys = Object.keys(memory);
+      if (keys.length === 0) {
+        memoryBody.innerHTML = '<tr><td colspan="3" class="empty-state">Sin variables asignadas (STORE/LOAD).</td></tr>';
       } else {
-        memoryView.innerHTML = "";
-        memKeys.forEach(k => {
+        memoryBody.innerHTML = "";
+        keys.forEach(k => {
+          const v = memory[k];
+          const sop = v >= 0n ? intToSopito(v) : "-" + intToSopito(-v);
           const tr = document.createElement("tr");
-          tr.innerHTML = `<td style="color: var(--accent);">var ${k}</td><td>${memory[k]}</td>`;
-          memoryView.appendChild(tr);
+          tr.innerHTML = `<td><b>var ${k}</b></td><td>${v}</td><td><code style="color: var(--accent);">${sop}</code></td>`;
+          memoryBody.appendChild(tr);
         });
       }
     }
 
-    // Converters logic
-    function updateConverters() {
+    // Converters Logic
+    numDec.addEventListener("input", () => {
       try {
-        const dec = BigInt(inputDecimal.value || 0);
-        outputSopitoNum.value = intToSopito(dec);
-      } catch {
-        outputSopitoNum.value = "";
-      }
-
-      try {
-        const text = inputText.value || "";
-        const bytes = textToSopitoBytes(text);
-        outputSopitoBytes.value = bytes.join(' ');
-      } catch {
-        outputSopitoBytes.value = "";
-      }
-    }
-
-    inputDecimal.addEventListener("input", updateConverters);
-    inputText.addEventListener("input", updateConverters);
-    updateConverters();
-
-    // Copy and Downloads
-    btnCopyOutput.addEventListener("click", () => {
-      const activeText = viewCpp.style.display !== "none" ? cppOutput.textContent : terminalOutput.textContent;
-      navigator.clipboard.writeText(activeText);
-      btnCopyOutput.textContent = "✅ Copiado";
-      setTimeout(() => btnCopyOutput.textContent = "📋 Copiar", 1500);
+        const val = BigInt(numDec.value || 0);
+        numSop.value = val >= 0n ? intToSopito(val) : "-" + intToSopito(-val);
+      } catch { numSop.value = ""; }
     });
 
-    btnDownloadSrc.addEventListener("click", () => {
+    numSop.addEventListener("input", () => {
+      try {
+        const clean = numSop.value.replace(/[^67]/g, '');
+        numDec.value = sopitoToInt(clean).toString();
+      } catch { numDec.value = ""; }
+    });
+
+    rawText.addEventListener("input", () => {
+      try {
+        sopBytes.value = textToSopitoBytes(rawText.value).join(' ');
+      } catch { sopBytes.value = ""; }
+    });
+    sopBytes.value = textToSopitoBytes(rawText.value).join(' ');
+
+    // Copy Button
+    btnCopyRight.addEventListener("click", () => {
+      let targetText = "";
+      if (tabCpp.classList.contains("active")) targetText = cppCodeDisplay.textContent;
+      else if (tabTerminal.classList.contains("active")) targetText = terminalScreen.textContent;
+      else targetText = editor.value;
+
+      navigator.clipboard.writeText(targetText);
+      const original = btnCopyRight.textContent;
+      btnCopyRight.textContent = "Copiado";
+      setTimeout(() => btnCopyRight.textContent = original, 1200);
+    });
+
+    // Save & Download
+    btnSaveSrc.addEventListener("click", () => {
       const ext = syntaxMode.value;
       const blob = new Blob([editor.value], { type: "text/plain;charset=utf-8" });
       const a = document.createElement("a");
@@ -1518,7 +1577,7 @@
     });
 
     btnDownloadCpp.addEventListener("click", () => {
-      const blob = new Blob([cppOutput.textContent], { type: "text/x-c++src;charset=utf-8" });
+      const blob = new Blob([cppCodeDisplay.textContent], { type: "text/x-c++src;charset=utf-8" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
       a.download = `programa_sopito.cpp`;
@@ -1526,7 +1585,7 @@
     });
 
     // Start
-    loadExample();
+    loadSelectedExample();
   </script>
 </body>
 </html>
