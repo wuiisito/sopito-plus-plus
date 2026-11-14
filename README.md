@@ -15,7 +15,7 @@
 </p>
 
 <p align="center">
-  🌐 <b><a href="https://wuiisito.github.io/sopito++/">¡Prueba el Compilador Web en Vivo aquí!</a></b>
+  🌐 <b><a href="https://wuiisito.github.io/sopito-/">¡Prueba el Compilador Web en Vivo aquí!</a></b>
 </p>
 
 ---
@@ -23,7 +23,7 @@
 ## 🌐 Compilador Web Online (GitHub Pages)
 
 Puedes usar **Sopito++** directamente desde tu navegador sin instalar nada:
-* 👉 **[https://wuiisito.github.io/sopito++/](https://wuiisito.github.io/sopito++/)**
+* 👉 **[https://wuiisito.github.io/sopito-/](https://wuiisito.github.io/sopito-/)**
 
 El entorno web incluye:
 * **Editor de código en tiempo real** con selector de ejemplos (Hola Mundo, Suma, Bucle, Fibonacci, Factorial).
