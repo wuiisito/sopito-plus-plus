@@ -1,0 +1,19 @@
+# ==========================================
+# Ejemplo 2: Suma de dos números (6 + 7)
+# ==========================================
+# En Sopito++:
+#   6 es el bit 0
+#   7 es el bit 1
+# El número 6 es binario 110 -> 776
+# El número 7 es binario 111 -> 777
+# La suma de 6 + 7 es 13 (binario 1101 -> 7767)
+
+PUSH_STR "Calculando 6 + 7 en Sopito++...\n"
+PUSH_STR "Resultado: "
+
+PUSH 6
+PUSH 7
+ADD
+PRINT_NUM
+PRINT_NL
+HALT

@@ -1,0 +1,46 @@
+# ==========================================
+# Ejemplo 5: Factorial de 5 usando Subrutina (CALL / RET)
+# ==========================================
+PUSH_STR "Calculando Factorial(5) en Sopito++ con CALL y RET...\n"
+
+PUSH 5
+STORE 0    # n = 5
+PUSH 1
+STORE 1    # res = 1
+
+CALL 10    # Llamar a subrutina FACTORIAL (etiqueta 10)
+
+PUSH_STR "Resultado de Factorial(5) = "
+LOAD 1
+PRINT_NUM
+PRINT_NL
+HALT
+
+# --- Subrutina FACTORIAL (Etiqueta 10) ---
+LABEL 10
+# Si n <= 1 retornar
+LOAD 0
+PUSH 1
+LT
+LOAD 0
+PUSH 1
+EQ
+OR
+JNZ 20
+
+# res = res * n
+LOAD 1
+LOAD 0
+MUL
+STORE 1
+
+# n = n - 1
+LOAD 0
+PUSH 1
+SUB
+STORE 0
+
+JMP 10     # Repetir bucle
+
+LABEL 20
+RET        # Retornar al llamador

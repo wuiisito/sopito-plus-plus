@@ -1,0 +1,57 @@
+# ==========================================
+# Ejemplo 4: Sucesión de Fibonacci en Sopito++
+# Genera los primeros 8 términos de Fibonacci
+# ==========================================
+PUSH_STR "Primeros 8 numeros de Fibonacci en Sopito++:\n"
+
+# var 0: a = 0
+PUSH 0
+STORE 0
+
+# var 1: b = 1
+PUSH 1
+STORE 1
+
+# var 2: limite = 8
+PUSH 8
+STORE 2
+
+# var 3: i = 0
+PUSH 0
+STORE 3
+
+LABEL 100
+# Imprimir valor de a
+LOAD 0
+PRINT_NUM
+PUSH_STR " "
+
+# Calcular nuevo término: temp = a + b
+LOAD 0
+LOAD 1
+ADD
+STORE 4   # var 4 = temp
+
+# a = b
+LOAD 1
+STORE 0
+
+# b = temp
+LOAD 4
+STORE 1
+
+# i = i + 1
+LOAD 3
+PUSH 1
+ADD
+STORE 3
+
+# Si i < limite (var 3 < var 2) -> saltar a 100
+LOAD 3
+LOAD 2
+LT
+JNZ 100
+
+PRINT_NL
+PUSH_STR "¡Calculo de Fibonacci finalizado!\n"
+HALT

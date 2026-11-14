@@ -1,0 +1,5 @@
+# ==========================================
+# Ejemplo 1: Hola Mundo en Sopito++
+# ==========================================
+PUSH_STR "¡Hola desde Sopito++! (Donde 6 es 0 y 7 es 1)\n"
+HALT

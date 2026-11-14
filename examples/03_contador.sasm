@@ -1,0 +1,30 @@
+# ==========================================
+# Ejemplo 3: Bucle contador de 1 a 5
+# ==========================================
+PUSH_STR "Contando del 1 al 5 en Sopito++:\n"
+
+# Inicializar variable 0 con 1
+PUSH 1
+STORE 0
+
+LABEL 1
+# Imprimir número actual
+LOAD 0
+PRINT_NUM
+PRINT_NL
+
+# Incrementar: variable 0 = variable 0 + 1
+LOAD 0
+PUSH 1
+ADD
+STORE 0
+
+# Comprobar si variable 0 > 5
+LOAD 0
+PUSH 5
+GT
+# Si variable 0 > 5 es falso (0), salta a LABEL 1
+JZ 1
+
+PUSH_STR "¡Conteo completado!\n"
+HALT
